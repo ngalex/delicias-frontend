@@ -1,13 +1,38 @@
 import React from "react";
 import { mainStyles } from "./main.styles";
 import { Text, View } from "react-native";
+import CommonInput from "../../component/common/Input/input.common";
 
 const Main = () => {
-    return (
-      <View style={mainStyles.mainContainer}>
-        <Text>Main view</Text>
-      </View>
-    );
-}
+  const handleInputValue = (val) => {
+    alert(val);
+  };
+  return (
+    <View style={mainStyles.mainContainer}>
+      <Text>Main view</Text>
 
-export default Main
+        <CommonInput
+          label="Select"
+          type="combo"
+          items={[
+            { label: "1", value: "1" },
+            { label: "2", value: "2" },
+            { label: "3", value: "3" },
+          ]}
+          onChangeInput={(val) => handleInputValue(val)}
+        ></CommonInput>
+      <CommonInput
+        label="Name"
+        type="text"
+        onChangeInput={(val) => handleInputValue(val)}
+      ></CommonInput>
+      <CommonInput
+        label="Date"
+        type="date"
+        onChangeInput={(val) => handleInputValue(val)}
+      ></CommonInput>
+    </View>
+  );
+};
+
+export default Main;
