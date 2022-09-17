@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import OrderItem from './OrderCard'
+import OrderCard from './OrderCard'
 
-export default function ListaPedidos() {
+export default function OrderCardList() {
   return (
     <View style={styles.container}>
       <Text>ListaPedidos</Text>
-      <OrderItem/>
+      <OrderCard/>
     </View>
   )
 }
