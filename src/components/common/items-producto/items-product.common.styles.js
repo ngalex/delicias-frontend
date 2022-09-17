@@ -5,7 +5,7 @@ export const CommonItemsProductStyles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         width: "100%",
-        backgroundColor: "green"
+        backgroundColor: "transparent"
     },
     itemContainer: {
         flexDirection: "column",
@@ -14,10 +14,19 @@ export const CommonItemsProductStyles = StyleSheet.create({
         backgroundColor: "red", 
         width: 70, 
         height: 100,
-        borderRadius: 20,
-        textAlign: "center",
+        borderRadius: 24,
         padding: 5,
-        marginRight: 10
+        marginRight: 10,
+        marginBottom: 10
+    },
+    itemCount: {
+        color: "#707070",
+        fontSize: 24
+    },  
+    itemIcon: {
+        color: "#707070",
+        textAlign: "center",
+        textAlignVertical: "center",
     },
     itemBgRed: {
         backgroundColor: "#FCE5E5"
