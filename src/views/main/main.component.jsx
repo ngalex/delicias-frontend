@@ -2,7 +2,7 @@ import React from "react";
 import { mainStyles } from "./main.styles";
 import { Text, View } from "react-native";
 import CommonInput from "../../component/common/Input/input.common";
-
+import CommonSearchBar from "../../component/common/searchbar/searchbar.common";
 const Main = () => {
   const handleInputValue = (val) => {
     alert(val);
@@ -31,6 +31,8 @@ const Main = () => {
         type="date"
         onChangeInput={(val) => handleInputValue(val)}
       ></CommonInput>
+
+      <CommonSearchBar onChangeInput={val => handleInputValue(val)}></CommonSearchBar>
     </View>
   );
 };
