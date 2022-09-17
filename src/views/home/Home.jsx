@@ -2,6 +2,7 @@ import { Button, StyleSheet, View } from 'react-native'
 import React from 'react'
 import OrderCardList from '../../components/orders/OrderCardList';
 import BigButton from '../../components/common/buttons/BigButton';
+import { ButtonP } from '../../components/common/buttons/ButtonP';
 
 export default function Home({ navigation }) {
   return (
@@ -10,8 +11,17 @@ export default function Home({ navigation }) {
         <OrderCardList/>
       </View>
       <View style={styles.wPedidos}>
-        <Button onPress={() => navigation.navigate('NuevoPedidoScreen')} title='Nuevo Pedido'/>
-        <Button onPress={() => navigation.navigate('PedidosScreen')} title='Mis Pedidos'/>
+        <ButtonP 
+        onPress={() => navigation.navigate('NuevoPedidoScreen')} 
+        title='Nuevo Pedido'
+        backgroundColor= "#AEC8F1"
+        width="45%"/>
+        <ButtonP 
+        onPress={() => navigation.navigate('PedidosScreen')} 
+        title='Mis Pedidos'
+        backgroundColor= "#F9C3C3"
+        width="45%"
+        />
       </View>
       <View style={styles.rowOptions}>
         <BigButton item={'Prestamos'}/>
