@@ -1,6 +1,5 @@
 import { StyleSheet, View } from 'react-native'
 import React, { useState } from 'react'
-import OrderCard from './OrderCard'
 import Card from '../common/Card';
 
 export default function OrderList({displayMode, modalHandler}) {
@@ -26,16 +25,13 @@ export default function OrderList({displayMode, modalHandler}) {
     midCol2: 'Pedido #9',
     botCol1: 'PENDIENTE'
     }
-  ])
+  ]);
 
-  function openModalHandler(key) {
-    console.log('abrir modal ' + key);
-  }
   return (
     
     <View style={styles.container}>
       {dataCard.map( item =>{ 
-        return <Card data={item} displayMode={displayMode} modalHandler={modalHandler}/>
+        return <Card key={item.key} data={item} displayMode={displayMode} modalHandler={modalHandler}/>
       })}
     </View>
   )
