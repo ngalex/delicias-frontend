@@ -1,4 +1,4 @@
-export default clientes = [
+export const clientes = [
     {
         id: 1,
         nombre: "Juan",

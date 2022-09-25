@@ -13,7 +13,7 @@ function MainNavigator() {
             <Stack.Navigator initialRouteName="HomeScreen">
                 <Stack.Screen options={{ headerShown: false} } name="HomeScreen" component={Home}/>
                 <Stack.Screen name="PedidosScreen" component={Pedidos}/>
-                <Stack.Screen options={{ headerShown: false} } name="NuevoPedidoScreen" component={NuevoPedido}/>
+                <Stack.Screen  name="NuevoPedidoScreen" component={NuevoPedido}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

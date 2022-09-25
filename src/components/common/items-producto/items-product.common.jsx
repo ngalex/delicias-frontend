@@ -101,9 +101,9 @@ const CommonItemsProduct = (props) => {
       color: "rojo",
     };
 
-    addDetail(detail);
-
-    props.onChangeDetails(items);
+    let details = addDetail(detail);
+    setitems(details);
+    props.onChangeDetails(details);
     return;
   };
 
@@ -117,17 +117,15 @@ const CommonItemsProduct = (props) => {
 
     if (!item) {
       details.push(detail);
-      setitems(details);
-      return;
+      return details;
     }
 
-    details.forEach((item) => {
+    details.map((item) => {
       if (item.producto.IDProducto == detail.producto.IDProducto) {
         item.cantidad++;
-        setitems(details);
-        return;
       }
     });
+    return details;
   };
 
   const removeDetail = (IDProducto) => {
@@ -136,6 +134,7 @@ const CommonItemsProduct = (props) => {
       (item) => item.producto.IDProducto != IDProducto
     );
     setitems(details);
+    props.onChangeDetails(details);
   };
 
   const showItems = () => {
