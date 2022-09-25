@@ -26,6 +26,12 @@ export default function NuevoPedido({ navigation }) {
     participaSorteo: false,
     participaPromocion: false,
   };
+  const producerInitialState = {
+    id: -1,
+    nombre: null,
+    dni: null,
+    telefono: -1,
+  };
   const [client, setclient] = useState(clientInitialState);
   const [order, setorder] = useState({
     IDPedido: 0,
@@ -37,7 +43,7 @@ export default function NuevoPedido({ navigation }) {
     delivery: false,
     suscriber: null,
   });
-  const [producer, setproducer] = useState(null);
+  const [producer, setproducer] = useState(producerInitialState);
   const [details, setdetails] = useState([]);
   const [amount, setamount] = useState(0);
   const [isPreloadedClientData, setisPreloadedClientData] = useState(false);
@@ -176,6 +182,8 @@ export default function NuevoPedido({ navigation }) {
           <CommonInput
             type="text"
             label="Dirección"
+            placeholder={"Escriba..."}
+            value={order.direccionEntrega}
             onChangeInput={(val) =>
               setorder({ ...order, direccionEntrega: val })
             }
@@ -185,6 +193,8 @@ export default function NuevoPedido({ navigation }) {
           <CommonInput
             type="date"
             label="Fecha de entrega"
+            value={order.fechaEntrega}
+            placeholder={"Seleccione..."}
             editable={true}
             onChangeInput={(val) => setorder({ ...order, fechaEntrega: val })}
           ></CommonInput>
@@ -201,6 +211,11 @@ export default function NuevoPedido({ navigation }) {
             <CommonInput
               label="Productor"
               type="combo"
+              value={
+                producer
+                  ? { label: producer.nombre, value: producer.id }
+                  : producerInitialState
+              }
               items={productores.map((x) => {
                 return { label: x.nombre, value: x.id };
               })}
@@ -220,6 +235,11 @@ export default function NuevoPedido({ navigation }) {
                 { label: "Si", value: true },
                 { label: "No", value: false },
               ]}
+              value={
+                order.delivery
+                  ? { label: "Si", value: true }
+                  : { label: "No", value: false }
+              }
               onChangeInput={(text) => text}
             ></CommonInput>
           </View>
@@ -277,7 +297,10 @@ export default function NuevoPedido({ navigation }) {
         <Text style={NewOrderStyles.subtitle}>Seleccionar Productos</Text>
 
         <CommonItemsProduct
-          onChangeDetails={(details) => handleUpdateDetails(details)}
+          onChangeDetails={(details) => {
+            console.log(details);
+            handleUpdateDetails(details);
+          }}
         ></CommonItemsProduct>
 
         <Text style={NewOrderStyles.subtitle}>Importe a Pagar</Text>
