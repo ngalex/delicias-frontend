@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { StyleSheet, Text, View,VirtualizedList, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import CommonInput from "../../components/common/Input/input.common";
 import { NewOrderStyles } from "./NewOrder.styles";
@@ -10,17 +10,18 @@ import {clientes} from "../../data/clientes";
 
 export default function NuevoPedido({ navigation }) {
   const [last, setlast] = useState(false);
-  const [client, setclient] = useState({
+  const clientInitialState = {
     id: 1,
-    nombre: "",
-    apellido: "",
-    dni: "",
+    nombre: null,
+    apellido: null,
+    dni: null,
     telefono: 0,
-    email: "",
-    direccion: "",
+    email: null,
+    direccion: null,
     participaSorteo: false,
     participaPromocion: false,
-  });
+  };
+  const [client, setclient] = useState(clientInitialState);
   const [order, setorder] = useState({
     IDPedido: 0,
     direccionEntrega: "",
@@ -34,7 +35,9 @@ export default function NuevoPedido({ navigation }) {
   const [producer, setproducer] = useState(null);
   const [details, setdetails] = useState([]);
   const [amount, setamount] = useState(0);
-  const preloadedClientDada = () => {
+  const [isPreloadedClientData, setisPreloadedClientData] = useState(false);
+
+  const loadClientForm = (clientData) =>{
     return (
       <View>
         <View
@@ -47,22 +50,34 @@ export default function NuevoPedido({ navigation }) {
             <CommonInput
               type="text"
               label="Cliente"
-              value={() => client.nombre + " " + client.apellido}
-              placeholder={client.nombre}
+              value={
+                clientData.nombre && clientData.apellido
+                  ? clientData.nombre + " " + clientData.apellido
+                  : null
+              }
+              placeholder={"Escriba..."}
+              editable={clientData === clientInitialState ? true : false}
               onChangeInput={(text) => setclient({ ...client, nombre: text })}
             ></CommonInput>
           </View>
           <ButtonP
-            title="Buscar Cliente"
+            title={
+              clientInitialState === clientData ? "Buscar Cliente" : "Limpiar"
+            }
             width={90}
             backgroundColor="#F9C3C3"
-            onPress={() => setclient({...client, ...clientes[0]})}
+            onPress={() => {
+              setclient({ ...client, ...clientes[0] });
+              setisPreloadedClientData(!isPreloadedClientData);
+            }}
           ></ButtonP>
         </View>
         <View style={{ marginBottom: 15 }}>
           <CommonInput
             type="text"
             label="DNI"
+            value={clientData.dni}
+            placeholder={"Escriba..."}
             onChangeInput={(text) => setclient({ ...client, dni: text })}
           ></CommonInput>
         </View>
@@ -70,6 +85,8 @@ export default function NuevoPedido({ navigation }) {
           <CommonInput
             type="text"
             label="Teléfono"
+            value={clientData.telefono ? clientData.telefono.toString() : null}
+            placeholder={"Escriba..."}
             onChangeInput={(text) => setclient({ ...client, telefono: text })}
           ></CommonInput>
         </View>
@@ -77,9 +94,12 @@ export default function NuevoPedido({ navigation }) {
           <CommonInput
             type="text"
             label="Correo"
+            value={clientData.email}
+            placeholder={"Escriba..."}
             onChangeInput={(text) => setclient({ ...client, email: text })}
           ></CommonInput>
         </View>
+
         <View
           style={{
             marginBottom: 15,
@@ -97,8 +117,13 @@ export default function NuevoPedido({ navigation }) {
                 { label: "Si", value: true },
                 { label: "No", value: false },
               ]}
+              value={
+                clientData.participaPromocion
+                  ? { label: "Si", value: true }
+                  : { label: "No", value: false }
+              }
               onChangeInput={(val) =>
-                setclient({ ...client, participaPromocion: val })
+                setclient({ ...client, participaPromocion: val.value })
               }
             ></CommonInput>
           </View>
@@ -118,8 +143,13 @@ export default function NuevoPedido({ navigation }) {
                 { label: "Si", value: true },
                 { label: "No", value: false },
               ]}
+              value={
+                clientData.participaSorteo
+                  ? { label: "Si", value: true }
+                  : { label: "No", value: false }
+              }
               onChangeInput={(val) =>
-                setclient({ ...client, participaSorteo: val })
+                  setclient({ ...client, participaSorteo: val.value })
               }
             ></CommonInput>
           </View>
@@ -132,7 +162,9 @@ export default function NuevoPedido({ navigation }) {
     return (
       <View>
         <Text style={NewOrderStyles.subtitle}>Datos de cliente</Text>
-        {preloadedClientDada()}
+        {isPreloadedClientData
+          ? loadClientForm(client)
+          : loadClientForm(clientInitialState)}
 
         <Text style={NewOrderStyles.subtitle}>Datos de Pedido</Text>
         <View style={{ marginBottom: 15 }}>
@@ -148,9 +180,8 @@ export default function NuevoPedido({ navigation }) {
           <CommonInput
             type="date"
             label="Fecha de entrega"
-            onChangeInput={(val) =>
-              setorder({ ...order, fechaEntrega: val })
-            }
+            editable={true}
+            onChangeInput={(val) => setorder({...order, fechaEntrega: val})}
           ></CommonInput>
         </View>
         <View
@@ -168,7 +199,7 @@ export default function NuevoPedido({ navigation }) {
               items={productores.map((x) => {
                 return { label: x.nombre, value: x.id };
               })}
-              onChangeInput={(text) => alert(text)}
+              onChangeInput={(text) => text}
             ></CommonInput>
           </View>
           <View style={{ flexBasis: "30%" }}>
@@ -179,7 +210,7 @@ export default function NuevoPedido({ navigation }) {
                 { label: "Si", value: true },
                 { label: "No", value: false },
               ]}
-              onChangeInput={(text) => alert(text)}
+              onChangeInput={(text) => text}
             ></CommonInput>
           </View>
         </View>

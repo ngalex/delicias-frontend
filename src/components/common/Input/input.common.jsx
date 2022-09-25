@@ -1,30 +1,32 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Modal, Text, TextInput, View, Pressable, Button } from "react-native";
+import {
+  Modal,
+  Text,
+  TextInput,
+  View,
+  Pressable,
+  Picker,
+  Button,
+} from "react-native";
 import { inputCommonStyles } from "./input.common.styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import DatePicker from "react-native-modern-datepicker";
 
-const CommonInput = (prop) => {
-  const [label, setLabel] = useState(prop.label);
-  const [type, setType] = useState(prop.type);
-  const [value, setValue] = useState(prop.value);
-  const [items, setItems] = useState(
+export default function CommonInput(prop) {
+  const { value, editable, label, type, items, placeholder } = prop;
+  const [inputValue, setinputValue] = useState(null);
+  const [inputItems, setItems] = useState(
     !Array.isArray(prop.items) || !prop.items.length
       ? [{ label: "Ninguno", value: null }]
-      : prop.items
+      : items
   );
-  const [currentDate, setCurrentDate] = useState(null);
-  const [placeholder, setPlaceholder] = useState(prop.placeholder);
-  const [editable, seteditable] = useState(prop.editable ? prop.editable : true);
   const inputType = {
     text: () => textInput(),
     combo: () => comboInput(),
     date: () => datePicker(),
     default: () => {},
   };
-
-  
 
   const textInput = () => {
     return (
@@ -35,7 +37,7 @@ const CommonInput = (prop) => {
         <TextInput
           style={inputCommonStyles.input}
           onChangeText={(text) => {
-            setValue(text);
+            // setinputValue(text);
             prop.onChangeInput(text);
           }}
           value={value}
@@ -61,14 +63,15 @@ const CommonInput = (prop) => {
         </Text>
 
         <DropDownPicker
+          key={value ? value.label : 0}
           open={open}
-          value={value}
+          value={value?.label}
           items={items}
-          placeholder={placeholder}
+          setValue={setinputValue}
           setOpen={setOpen}
-          setValue={setValue}
-          onChangeValue={(text) => prop.onChangeInput(text)}
           setItems={setItems}
+          placeholder={placeholder}
+          onSelectItem={(text) => prop.onChangeInput(text)}
           dropDownContainerStyle={{
             backgroundColor: "white",
             zIndex: 1000,
@@ -93,14 +96,17 @@ const CommonInput = (prop) => {
         <Pressable
           style={inputCommonStyles.container}
           onPress={() => {
-            editable ? setModalVisible(true) : null
+            editable ? setModalVisible(true) : null;
           }}
         >
-          <Text style={label ? inputCommonStyles.label: {display: "none"}}>{label}</Text>
+          <Text style={label ? inputCommonStyles.label : { display: "none" }}>
+            {label}
+          </Text>
           <TextInput
             style={inputCommonStyles.input}
             placeholder={placeholder}
-            value={value}
+            value={inputValue ? inputValue : value}
+            editable={false}
           ></TextInput>
         </Pressable>
 
@@ -111,6 +117,7 @@ const CommonInput = (prop) => {
           onRequestClose={() => {
             Alert.alert("Modal has been closed.");
             setModalVisible(!modalVisible);
+            prop.onChangeInput(inputValue);
           }}
         >
           <View style={inputCommonStyles.centeredView}>
@@ -118,8 +125,7 @@ const CommonInput = (prop) => {
               <DatePicker
                 selected={value}
                 onSelectedChange={(date) => {
-                  prop.onChangeInput(date);
-                  setValue(date);
+                  setinputValue(date);
                 }}
               />
 
@@ -128,7 +134,10 @@ const CommonInput = (prop) => {
                   inputCommonStyles.button,
                   inputCommonStyles.buttonClose,
                 ]}
-                onPress={() => setModalVisible(false)}
+                onPress={() => {
+                  setModalVisible(false);
+                  prop.onChangeInput(inputValue);
+                }}
               >
                 <Text style={inputCommonStyles.textStyle}>Confirmar</Text>
               </Pressable>
@@ -140,6 +149,4 @@ const CommonInput = (prop) => {
   };
 
   return <View>{(inputType[type] || inputType["default"])()}</View>;
-};
-
-export default CommonInput;
+}
