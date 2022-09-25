@@ -1,12 +1,17 @@
-import { StyleSheet, Text, View,VirtualizedList, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  VirtualizedList,
+  ScrollView,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import CommonInput from "../../components/common/Input/input.common";
 import { NewOrderStyles } from "./NewOrder.styles";
 import { ButtonP } from "../../components/common/buttons/ButtonP";
 import productores from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
-import {clientes} from "../../data/clientes";
-
+import { clientes } from "../../data/clientes";
 
 export default function NuevoPedido({ navigation }) {
   const [last, setlast] = useState(false);
@@ -24,20 +29,20 @@ export default function NuevoPedido({ navigation }) {
   const [client, setclient] = useState(clientInitialState);
   const [order, setorder] = useState({
     IDPedido: 0,
-    direccionEntrega: "",
+    direccionEntrega: null,
     fechaEntrega: null,
     estado: "pendiente",
-    montoTotal: 0.,
-    anticipo: 0.,
+    montoTotal: 0,
+    anticipo: 0,
     delivery: false,
-    suscriber: null
+    suscriber: null,
   });
   const [producer, setproducer] = useState(null);
   const [details, setdetails] = useState([]);
   const [amount, setamount] = useState(0);
   const [isPreloadedClientData, setisPreloadedClientData] = useState(false);
 
-  const loadClientForm = (clientData) =>{
+  const loadClientForm = (clientData) => {
     return (
       <View>
         <View
@@ -149,14 +154,14 @@ export default function NuevoPedido({ navigation }) {
                   : { label: "No", value: false }
               }
               onChangeInput={(val) =>
-                  setclient({ ...client, participaSorteo: val.value })
+                setclient({ ...client, participaSorteo: val.value })
               }
             ></CommonInput>
           </View>
         </View>
       </View>
     );
-  }
+  };
 
   const firstPage = () => {
     return (
@@ -172,7 +177,7 @@ export default function NuevoPedido({ navigation }) {
             type="text"
             label="Dirección"
             onChangeInput={(val) =>
-              setorder({ ...order, participaSorteo: val })
+              setorder({ ...order, direccionEntrega: val })
             }
           ></CommonInput>
         </View>
@@ -181,7 +186,7 @@ export default function NuevoPedido({ navigation }) {
             type="date"
             label="Fecha de entrega"
             editable={true}
-            onChangeInput={(val) => setorder({...order, fechaEntrega: val})}
+            onChangeInput={(val) => setorder({ ...order, fechaEntrega: val })}
           ></CommonInput>
         </View>
         <View
@@ -199,7 +204,12 @@ export default function NuevoPedido({ navigation }) {
               items={productores.map((x) => {
                 return { label: x.nombre, value: x.id };
               })}
-              onChangeInput={(text) => text}
+              onChangeInput={(val) => {
+                setproducer({
+                  ...producer,
+                  ...productores.find((x) => x.id == val.value),
+                });
+              }}
             ></CommonInput>
           </View>
           <View style={{ flexBasis: "30%" }}>
@@ -232,11 +242,24 @@ export default function NuevoPedido({ navigation }) {
             title="Siguiente"
             backgroundColor="#AEC8F1"
             width="45%"
-            onPress={() => setlast(true)}
+            onPress={() => {
+              canGoSecondPage()
+                ? setlast(true)
+                : alert("Complete todos los campos antes de continuar.");
+            }}
           ></ButtonP>
         </View>
       </View>
     );
+  };
+
+  const canGoSecondPage = () => {
+    if (!client) return false;
+    if (!order.direccionEntrega) return false;
+    if (!order.fechaEntrega) return false;
+    if (!producer) return false;
+    if (order.delivery == null) return false;
+    return true;
   };
 
   const handleUpdateDetails = (value) => {
@@ -246,9 +269,6 @@ export default function NuevoPedido({ navigation }) {
       0
     );
     setamount(newAmount);
-  };
-  const add = (accumulator, a) => {
-    return accumulator.producto.precio + a;
   };
 
   const secondPage = () => {
