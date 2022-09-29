@@ -12,6 +12,7 @@ import {
 import { inputCommonStyles } from "./input.common.styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import DatePicker from "react-native-modern-datepicker";
+import { Switch } from 'react-native-switch';
 
 export default function CommonInput(prop) {
   const { value, editable, label, type, items, placeholder } = prop;
@@ -24,6 +25,7 @@ export default function CommonInput(prop) {
   const inputType = {
     text: () => textInput(),
     combo: () => comboInput(),
+    switch: () => switchInput(),
     date: () => datePicker(),
     default: () => {},
   };
@@ -65,24 +67,60 @@ export default function CommonInput(prop) {
         <DropDownPicker
           key={value ? value.label : 0}
           open={open}
-          value={value?.label}
+          value={inputValue}
           items={items}
           setValue={setinputValue}
           setOpen={setOpen}
           setItems={setItems}
           placeholder={placeholder}
+          listMode='SCROLLVIEW'
           onSelectItem={(text) => prop.onChangeInput(text)}
+          selectedItemLabelStyle={{color: '#8E8E8E'}}
+          listItemLabelStyle={{color: '#A2A2A2'}}
+          textStyle={{fontSize: 16, color: "#8E8E8E", fontWeight: "500"}}
           dropDownContainerStyle={{
             backgroundColor: "white",
             zIndex: 1000,
-            elevation: 1000,
+            elevation: 24,
             ...inputCommonStyles.comboStyle,
             ...inputCommonStyles.input,
           }}
           style={{
-            ...inputCommonStyles.comboStyle,
-            ...inputCommonStyles.input,
+            ...inputCommonStyles.comboStyle
           }}
+        />
+      </View>
+    );
+  };
+
+  const switchInput = () => {
+    const [isEnabled, setIsEnabled] = useState(value);
+    return (
+      <View
+        style={{
+          zIndex: 1000,
+          elevation: 1000,
+        }}
+      >
+        <Text style={label ? inputCommonStyles.label : { display: "none" }}>
+          {label}
+        </Text>
+        <Switch
+          value={isEnabled}
+          onValueChange={(val) => {setIsEnabled(val); prop.onChangeInput(val)}}
+          disabled={false}
+          activeText={'SI '}
+          inActiveText={' NO'}
+          backgroundActive={'#D4E3FB'}
+          backgroundInactive={'#C5C5C5'}
+          circleActiveColor={'#6D9DE8'}
+          circleInActiveColor={'#E3E3E3'}
+          switchLeftPx={3}
+          activeTextStyle={{ color: 'gray', fontWeight: '600', fontSize: 16}}
+          inactiveTextStyle={{ color: '#747272', fontWeight: '600', fontSize: 16}}
+          switchRightPx={3}
+          circleBorderWidth={0}
+          switchWidthMultiplier={2.5}
         />
       </View>
     );

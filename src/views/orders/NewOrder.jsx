@@ -13,6 +13,10 @@ import productores from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import { clientes } from "../../data/clientes";
 
+//BUG: cuando se pre cargan los datos del cliente con el bton BUSCAR CLIENTE, los valores de 'participaSorteo' y 'participaPromocion' tambien 
+//son cargados en el objeto 'client' pero no se actualiza el valor de los switchs. Por lo que si alguno viene en true, el switch va a seguir viendose apagado
+//se arregla con useEffects
+
 export default function NuevoPedido({ navigation }) {
   const [last, setlast] = useState(false);
   const clientInitialState = {
@@ -47,6 +51,10 @@ export default function NuevoPedido({ navigation }) {
   const [details, setdetails] = useState([]);
   const [amount, setamount] = useState(0);
   const [isPreloadedClientData, setisPreloadedClientData] = useState(false);
+
+  const [isEnabledSorteo, setIsEnabledSorteo] = useState(false);
+  const [isEnabledOffer, setIsEnabledOffer] = useState(false);
+  const [isEnabledDelivery, setIsEnabledDelivery] = useState(false);
 
   const loadClientForm = (clientData) => {
     return (
@@ -121,23 +129,15 @@ export default function NuevoPedido({ navigation }) {
           <Text style={{ flexGrow: 1 }}>
             {"¿Desea recibir ofertas por correo?"}
           </Text>
-          <View style={{ width: 100 }}>
-            <CommonInput
-              type="combo"
-              items={[
-                { label: "Si", value: true },
-                { label: "No", value: false },
-              ]}
-              value={
-                clientData.participaPromocion
-                  ? { label: "Si", value: true }
-                  : { label: "No", value: false }
-              }
-              onChangeInput={(val) =>
-                setclient({ ...client, participaPromocion: val.value })
-              }
-            ></CommonInput>
-          </View>
+          <CommonInput
+            type="switch"
+            value={isEnabledOffer}
+            onChangeInput={(val) =>{
+              setIsEnabledOffer(val);
+              setclient({ ...client, participaPromocion: val })
+            }
+            }
+          ></CommonInput>
         </View>
         <View
           style={{
@@ -147,23 +147,15 @@ export default function NuevoPedido({ navigation }) {
           }}
         >
           <Text style={{ flexGrow: 1 }}>{"¿Desea participar en sorteos?"}</Text>
-          <View style={{ width: 100 }}>
-            <CommonInput
-              type="combo"
-              items={[
-                { label: "Si", value: true },
-                { label: "No", value: false },
-              ]}
-              value={
-                clientData.participaSorteo
-                  ? { label: "Si", value: true }
-                  : { label: "No", value: false }
-              }
-              onChangeInput={(val) =>
-                setclient({ ...client, participaSorteo: val.value })
-              }
-            ></CommonInput>
-          </View>
+          <CommonInput
+            type="switch"
+            value={isEnabledSorteo}
+            onChangeInput={(val) =>{
+              setIsEnabledSorteo(val);
+              setclient({ ...client, participaSorteo: val })
+            }
+            }
+          ></CommonInput>
         </View>
       </View>
     );
@@ -203,7 +195,6 @@ export default function NuevoPedido({ navigation }) {
           style={{
             marginBottom: 15,
             flexDirection: "row",
-            alignItems: "center",
             justifyContent: "space-between",
           }}
         >
@@ -227,22 +218,15 @@ export default function NuevoPedido({ navigation }) {
               }}
             ></CommonInput>
           </View>
-          <View style={{ flexBasis: "30%" }}>
-            <CommonInput
-              label="Delivery"
-              type="combo"
-              items={[
-                { label: "Si", value: true },
-                { label: "No", value: false },
-              ]}
-              value={
-                order.delivery
-                  ? { label: "Si", value: true }
-                  : { label: "No", value: false }
-              }
-              onChangeInput={(text) => text}
-            ></CommonInput>
-          </View>
+          <CommonInput
+            label="Delivery"
+            value={isEnabledDelivery}
+            type="switch"
+            onChangeInput={(val) => {
+              setIsEnabledDelivery(val);
+              setorder({ ...order, delivery: val })
+            }}
+          ></CommonInput>
         </View>
 
         <View
