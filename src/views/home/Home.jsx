@@ -11,7 +11,7 @@ export default function Home({ navigation }) {
         <Text style={styles.title}>Pedidos de hoy</Text>
         <OrderList
           displayMode={"shortMode"}
-          _selectionHandler={(idpedido => navigation.navigate("PedidoScreen",{ idpedido: idpedido }))}
+          selectionHandler={(idpedido => navigation.navigate("PedidoScreen",{ idpedido: idpedido }))}
         />
       </View>
       <View style={styles.wPedidos}>

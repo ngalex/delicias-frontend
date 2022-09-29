@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native'
 import React, { useState } from 'react'
 import Card from '../common/Card';
 
-export default function OrderList({ displayMode, modalHandler, _selectionHandler }) {
+export default function OrderList({ displayMode, modalHandler, selectionHandler }) {
   const [dataCard, setDataCard] = useState([
     {
       topCol1: "Lorena Diaz",
@@ -36,7 +36,7 @@ export default function OrderList({ displayMode, modalHandler, _selectionHandler
             data={item}
             displayMode={displayMode}
             modalHandler={modalHandler}
-            selectionHandler={_selectionHandler}
+            selectionHandler={selectionHandler}
           />
         );
       })}
