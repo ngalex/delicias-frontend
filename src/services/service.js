@@ -7,15 +7,38 @@ export const getProductos = async () => {
   return data;
 };
 
+export const getProductoById = async (id) => {
+  const { error, data } = await supabase
+    .from("productos")
+    .select()
+    .eq("id", id);
+  if (error) throw error;
+  return data;
+};
+
 //Productores
 export const getProductores = async () => {
   const { error, data } = await supabase.from("productores").select();
   if (error) throw error;
   return data;
 };
+export const getProductorById = async (id) => {
+  const { error, data } = await supabase
+    .from("productores")
+    .select()
+    .eq("id", id);
+  if (error) throw error;
+  return data;
+};
 //Clientes
 export const getClientes = async () => {
   const { error, data } = await supabase.from("clientes").select();
+  if (error) throw error;
+  return data;
+};
+
+export const getClienteById = async (id) => {
+  const { error, data } = await supabase.from("clientes").select().eq("id", id);
   if (error) throw error;
   return data;
 };
@@ -31,6 +54,13 @@ export const getPedidos = async () => {
   if (error) throw error;
   return data;
 };
+
+export const getPedidoById = async (id) => {
+  const { error, data } = await supabase.from("pedidos").select().eq("id", id);
+  if (error) throw error;
+  return data;
+};
+
 //Insertar un pedido
 //Ejemplo de agregar pedido
 // addPedido(
@@ -52,7 +82,7 @@ export const getPedidos = async () => {
 //       },
 //       {
 //         cantidad: 100,
-//         color:"rojo",         
+//         color:"rojo",
 //         producto_id: 1
 //       }
 //     ]
