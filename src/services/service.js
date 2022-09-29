@@ -114,11 +114,22 @@ export const updatePedido = async (pedido_id, pedidoActualizado) => {
   if (error) throw error;
   return data;
 };
+
 //Detalle de Producto
 const addDetallesProductos = async (detalles) => {
   const { error, data } = await supabase
     .from("detalle_producto")
     .insert(detalles);
+  if (error) throw error;
+  return data;
+};
+
+//detalles es un array de objetos con la canitdad y el color modificados
+export const updateDetallesProductos = async (detalles) => {
+  const { error, data } = await supabase
+    .from("detalle_producto")
+    .update(detalles);
+  console.log(data);
   if (error) throw error;
   return data;
 };
