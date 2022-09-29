@@ -11,7 +11,8 @@ export const getProductoById = async (id) => {
   const { error, data } = await supabase
     .from("productos")
     .select()
-    .eq("id", id);
+    .eq("id", id)
+    .single();
   if (error) throw error;
   return data;
 };
@@ -26,7 +27,8 @@ export const getProductorById = async (id) => {
   const { error, data } = await supabase
     .from("productores")
     .select()
-    .eq("id", id);
+    .eq("id", id)
+    .single();
   if (error) throw error;
   return data;
 };
@@ -38,7 +40,7 @@ export const getClientes = async () => {
 };
 
 export const getClienteById = async (id) => {
-  const { error, data } = await supabase.from("clientes").select().eq("id", id);
+  const { error, data } = await supabase.from("clientes").select().eq("id", id).single();
   if (error) throw error;
   return data;
 };
@@ -56,7 +58,7 @@ export const getPedidos = async () => {
 };
 
 export const getPedidoById = async (id) => {
-  const { error, data } = await supabase.from("pedidos").select().eq("id", id);
+  const { error, data } = await supabase.from("pedidos").select().eq("id", id).single();
   if (error) throw error;
   return data;
 };
