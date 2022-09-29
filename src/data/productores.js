@@ -1,4 +1,4 @@
-export default productores = [
+export const productores = [
     {
         id: 1,
         nombre: "Daniel Valencia",

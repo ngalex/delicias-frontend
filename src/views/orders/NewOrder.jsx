@@ -9,7 +9,7 @@ import React, { useState, useEffect } from "react";
 import CommonInput from "../../components/common/Input/input.common";
 import { NewOrderStyles } from "./NewOrder.styles";
 import { ButtonP } from "../../components/common/buttons/ButtonP";
-import productores from "../../data/productores";
+import {productores} from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import { clientes } from "../../data/clientes";
 

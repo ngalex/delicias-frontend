@@ -9,9 +9,10 @@ import OptionGrid from "../buttons/BigButton";
  * prop.onChangeDetails es un handle que escucha cambios en el listado de detalle producto y retorna al componente parent.
  * @returns
  */
-const CommonItemsProduct = (props) => {
-  const [items, setitems] = useState(
-    !Array.isArray(props.items)? [] : props.items
+export default function CommonItemsProduct(props) {
+  const { items, editable } = props;
+  const [detailList, setdetails] = useState(
+    !items || !Array.isArray(items) ? [] : items
     // [
     //   {
     //     idDetalleDeProduto: 1,
@@ -70,6 +71,7 @@ const CommonItemsProduct = (props) => {
     //   },
     // ]
   );
+  const [isEditable, setisEditable] = useState(editable ? editable : false);
   let counter = 0;
 
   const bgList = [
@@ -102,14 +104,14 @@ const CommonItemsProduct = (props) => {
     };
 
     let details = addDetail(detail);
-    setitems(details);
+    setdetails(details);
     props.onChangeDetails(details);
     return;
   };
 
   const addDetail = (detail) => {
     if (!detail) return;
-    let details = [...items];
+    let details = [...detailList];
 
     let item = details.find(
       (item) => item.producto.IDProducto == detail.producto.IDProducto
@@ -130,16 +132,16 @@ const CommonItemsProduct = (props) => {
 
   const removeDetail = (IDProducto) => {
     if (!IDProducto) return;
-    let details = items.filter(
+    let details = detailList.filter(
       (item) => item.producto.IDProducto != IDProducto
     );
-    setitems(details);
+    setdetails(details);
     props.onChangeDetails(details);
   };
 
   const showItems = () => {
-    if (items.length > 0) {
-      return items.map((value, index) => (
+    if (detailList.length > 0) {
+      return detailList.map((value, index) => (
         <Pressable
           onPress={() => removeDetail(value.producto.IDProducto)}
           key={index}
@@ -158,15 +160,18 @@ const CommonItemsProduct = (props) => {
 
   return (
     <View style={CommonItemsProductStyles.container}>
-      <Pressable
-        style={{ width: 80, height: 100 }}
-        onPress={() => onAddButton()}
-      >
-        <OptionGrid item="+"></OptionGrid>
-      </Pressable>
+      {isEditable ? (
+        <Pressable
+          style={{ width: 80, height: 100 }}
+          onPress={() => onAddButton()}
+        >
+          <OptionGrid item="+"></OptionGrid>
+        </Pressable>
+      ) : (
+        <View></View>
+      )}
+
       {showItems()}
     </View>
   );
-};
-
-export default CommonItemsProduct;
+}

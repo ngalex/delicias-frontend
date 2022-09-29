@@ -1,13 +1,11 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Modal,
   Text,
   TextInput,
   View,
-  Pressable,
-  Picker,
-  Button,
+  Pressable
 } from "react-native";
 import { inputCommonStyles } from "./input.common.styles";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -66,10 +64,11 @@ export default function CommonInput(prop) {
           key={value ? value.label : 0}
           open={open}
           value={value?.label}
-          items={items}
+          items={items ? items : []}
           setValue={setinputValue}
           setOpen={setOpen}
           setItems={setItems}
+          disabled = {editable}
           placeholder={placeholder}
           onSelectItem={(text) => prop.onChangeInput(text)}
           dropDownContainerStyle={{
