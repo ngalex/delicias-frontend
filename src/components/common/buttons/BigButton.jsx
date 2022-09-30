@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function OptionGrid({item}) {
+export default function BigButton({item}) {
   return (
     <View style={ styles.container }>
       <Text>{item}</Text>

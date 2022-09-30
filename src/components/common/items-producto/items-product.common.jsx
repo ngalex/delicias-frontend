@@ -2,7 +2,10 @@ import React from "react";
 import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { CommonItemsProductStyles } from "./items-product.common.styles";
-import OptionGrid from "../buttons/BigButton";
+import BigButton from "../buttons/BigButton";
+
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import ProductItem from "../products/ProductItem";
 
 /**
  * prop.items es un array de Detalle producto
@@ -140,18 +143,11 @@ const CommonItemsProduct = (props) => {
   const showItems = () => {
     if (items.length > 0) {
       return items.map((value, index) => (
-        <Pressable
-          onPress={() => removeDetail(value.producto.IDProducto)}
-          key={index}
-          style={[CommonItemsProductStyles.itemContainer, bgList[nextStyle()]]}
-        >
-          <Text style={CommonItemsProductStyles.itemCount}>
-            {value.cantidad}
-          </Text>
-          <Text style={CommonItemsProductStyles.itemIcon}>
-            {value.producto.nombre}
-          </Text>
-        </Pressable>
+        <ProductItem
+        key={value.idDetalleDeProduto}
+          onClick={() => props.productItemModalHandler(value.producto.IDProducto)}
+          data={value}
+        />
       ));
     }
   };
@@ -162,7 +158,7 @@ const CommonItemsProduct = (props) => {
         style={{ width: 80, height: 100 }}
         onPress={() => onAddButton()}
       >
-        <OptionGrid item="+"></OptionGrid>
+        <BigButton item="+"></BigButton>
       </Pressable>
       {showItems()}
     </View>

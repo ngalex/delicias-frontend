@@ -12,6 +12,9 @@ import { ButtonP } from "../../components/common/buttons/ButtonP";
 import productores from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import { clientes } from "../../data/clientes";
+import CustomModal from './../../components/common/modals/CustomModal';
+import { SelectList } from 'react-native-dropdown-select-list';
+import ProductItemModal from "../../components/common/modals/ProductItemModal";
 
 //BUG: cuando se pre cargan los datos del cliente con el bton BUSCAR CLIENTE, los valores de 'participaSorteo' y 'participaPromocion' tambien 
 //son cargados en el objeto 'client' pero no se actualiza el valor de los switchs. Por lo que si alguno viene en true, el switch va a seguir viendose apagado
@@ -55,6 +58,11 @@ export default function NuevoPedido({ navigation }) {
   const [isEnabledSorteo, setIsEnabledSorteo] = useState(false);
   const [isEnabledOffer, setIsEnabledOffer] = useState(false);
   const [isEnabledDelivery, setIsEnabledDelivery] = useState(false);
+
+  //UseStates para Modal
+  const [showModal, setShowModal] = useState(false)
+  const [selectedProductItem, setSelectedProductItem] = useState()
+  //
 
   const loadClientForm = (clientData) => {
     return (
@@ -279,12 +287,13 @@ export default function NuevoPedido({ navigation }) {
     return (
       <View>
         <Text style={NewOrderStyles.subtitle}>Seleccionar Productos</Text>
-
+        <ProductItemModal onConfirm={setNewOrEditedProduct} showModal={showModal} setShowModal={setShowModal} data={selectedProductItem}/>
         <CommonItemsProduct
           onChangeDetails={(details) => {
             console.log(details);
             handleUpdateDetails(details);
           }}
+          productItemModalHandler = {productItemModalHandler}
         ></CommonItemsProduct>
 
         <Text style={NewOrderStyles.subtitle}>Importe a Pagar</Text>
@@ -323,6 +332,20 @@ export default function NuevoPedido({ navigation }) {
       </View>
     );
   };
+
+  //#region Modal de Producto
+
+  const productItemModalHandler = (product) => {
+    console.log(product);
+    setSelectedProductItem(product);
+    setShowModal(!showModal);
+  }
+  
+  const setNewOrEditedProduct = () => {
+    console.log('details');
+    setShowModal(!showModal);
+  }
+  //#endregion
 
   return (
     <ScrollView style={NewOrderStyles.container}>
