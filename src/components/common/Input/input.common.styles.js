@@ -9,7 +9,9 @@ export const inputCommonStyles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         paddingLeft: 10,
-        paddingRight: 10
+        paddingRight: 10,
+        elevation: 5,
+        shadowColor: 'gray'
     },
     label: {
         marginBottom: 5,

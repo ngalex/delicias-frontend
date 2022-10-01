@@ -15,7 +15,7 @@ import DatePicker from "react-native-modern-datepicker";
 import { Switch } from 'react-native-switch';
 
 export default function CommonInput(prop) {
-  const { value, editable, label, type, items, placeholder } = prop;
+  const { value, editable, label, type, keyboardType, items, placeholder } = prop;
   const [inputValue, setinputValue] = useState(null);
   const [inputItems, setItems] = useState(
     !Array.isArray(prop.items) || !prop.items.length
@@ -42,6 +42,7 @@ export default function CommonInput(prop) {
             // setinputValue(text);
             prop.onChangeInput(text);
           }}
+          keyboardType = {keyboardType}
           value={value}
           defaultValue={value}
           placeholder={placeholder}

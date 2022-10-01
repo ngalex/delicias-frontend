@@ -10,8 +10,7 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
   const [enableConfirmButtonModal, setEnableConfirmButtonModal] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState();
   const [selectedColor, setSelectedColor] = useState();
-  const [open, setOpen] = useState(false);
-  const [openDropProduct, setOpenDropProduct] = useState(false);
+  const [amount, setAmount] = useState(1);
 
   const products = [
     {id:'1',name:'Manzanas'},
@@ -19,12 +18,10 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
     {id:'3',name:'Copos de Azucar'}
   ];
   const colors = [
-    {id:'1',name:'Rojo'},
-    {id:'2',name:'Azul'},
+    {id:'2',name:'Celeste'},
     {id:'3',name:'Verde'},
     {id:'4',name:'Amarillo'},
     {id:'5',name:'Rosa'},
-    {id:'6',name:'Lila'},
     {id:'7',name:'Naranja'}
   ];
 
@@ -44,7 +41,7 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
           enableConfirmButton={enableConfirmButtonModal}
           >
           <View style={[modalStyles.customContentContainer]}>
-            <View style={{zIndex: 1001}}>
+            <View style={{zIndex: 1001, marginBottom: 10}}>
               <CommonInput
                 label="Tipo de producto"
                 type="combo"
@@ -57,19 +54,20 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
                 }}
               />
             </View>
-          
-          <CommonInput
-            label="Color del producto"
-            type="combo"
-            value={selectedColor}
-            items={colors.map((x) => {
-              return { label: x.name, value: x.id };
-            })}
-            onChangeInput={(val) => {
-              setSelectedColor(colors.find((x) => x.id == val.value));
-            }}
-          />
-          <AmountWidget/>
+            <View style={{marginBottom: 10}}>
+              <CommonInput
+                label="Color del producto"
+                type="combo"
+                value={selectedColor}
+                items={colors.map((x) => {
+                  return { label: x.name, value: x.id };
+                })}
+                onChangeInput={(val) => {
+                  setSelectedColor(colors.find((x) => x.id == val.value));
+                }}
+              />
+            </View>
+            <AmountWidget amount={amount} setAmount={setAmount}/>
           </View>
         </CustomModal>
     </View>
@@ -89,7 +87,7 @@ const modalStyles = StyleSheet.create({
     },
     customContentContainer:{
       width: '100%',
-      paddingVertical: 50
+      padding: 10
     },
     toggle: {
       position: 'absolute',
