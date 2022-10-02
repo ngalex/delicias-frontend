@@ -59,6 +59,8 @@ export default function NuevoPedido({ navigation }) {
   const [isEnabledOffer, setIsEnabledOffer] = useState(false);
   const [isEnabledDelivery, setIsEnabledDelivery] = useState(false);
 
+  const [detailProducts, setDetailProducts] = useState([])
+
   //UseStates para Modal
   const [showModal, setShowModal] = useState(false)
   const [selectedProductItem, setSelectedProductItem] = useState()
@@ -289,8 +291,9 @@ export default function NuevoPedido({ navigation }) {
         <Text style={NewOrderStyles.subtitle}>Seleccionar Productos</Text>
         <ProductItemModal onConfirm={setNewOrEditedProduct} showModal={showModal} setShowModal={setShowModal} data={selectedProductItem}/>
         <CommonItemsProduct
+          items={detailProducts}
+          setData={setDetailProducts}
           onChangeDetails={(details) => {
-            console.log(details);
             handleUpdateDetails(details);
           }}
           productItemModalHandler = {productItemModalHandler}
@@ -336,13 +339,15 @@ export default function NuevoPedido({ navigation }) {
   //#region Modal de Producto
 
   const productItemModalHandler = (product) => {
-    console.log(product);
     setSelectedProductItem(product);
     setShowModal(!showModal);
   }
   
-  const setNewOrEditedProduct = () => {
-    console.log('details');
+  const setNewOrEditedProduct = (detail) => {
+    if (detail.idDetalleDeProducto === 0) {
+      detail.idDetalleDeProducto = detailProducts.length
+    }
+    setDetailProducts([...detailProducts, detail])
     setShowModal(!showModal);
   }
   //#endregion

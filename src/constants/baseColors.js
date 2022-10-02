@@ -1,3 +1,4 @@
 export const baseColors = {
-    fondoApp:'#FAFAFA'
+    fondoApp:'#FAFAFA',
+    shadowColor: '#e5e5e5'
 }

@@ -1,34 +1,50 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { React, useState } from 'react';
 import CustomModal from './CustomModal';
-import SelectList from 'react-native-dropdown-select-list';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { inputCommonStyles } from './../Input/input.common.styles';
 import CommonInput from '../Input/input.common';
 import AmountWidget from '../AmountWidget';
 export default function ProductItemModal({onConfirm, showModal, setShowModal, data}) {
-  const [enableConfirmButtonModal, setEnableConfirmButtonModal] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState();
-  const [selectedColor, setSelectedColor] = useState();
-  const [amount, setAmount] = useState(1);
-
   const products = [
     {id:'1',name:'Manzanas'},
     {id:'2',name:'Pochoclos'},
     {id:'3',name:'Copos de Azucar'}
   ];
+  const [selectedProduct, setSelectedProduct] = useState(data ? products.find((x) => x.id === data.idProducto) : null);
+  const [selectedColor, setSelectedColor] = useState(data ? data.idColor : null);
+  const [amount, setAmount] = useState(data ? data.cantidad : 0);
+
+  const getProduct = () => {
+    // if (data && data.idProducto) {
+    //   const product = products.find((x) => x.id === data.idProducto);
+    //   return product
+    // }
+    return products.find((x) => x.id === data.idProducto)
+  }
+
   const colors = [
-    {id:'2',name:'Celeste'},
-    {id:'3',name:'Verde'},
-    {id:'4',name:'Amarillo'},
-    {id:'5',name:'Rosa'},
-    {id:'7',name:'Naranja'}
+    {id:'0',name:'Celeste'},
+    {id:'1',name:'Verde'},
+    {id:'2',name:'Amarillo'},
+    {id:'3',name:'Rosa'},
+    {id:'4',name:'Naranja'}
   ];
 
   const callOnConfirmMethod = () => {
-    setEnableConfirmButtonModal(false);
-    onConfirm();
+    setAmount(0);
+    setSelectedColor(null);
+    setSelectedProduct(null);
+    onConfirm({
+      idDetalleDeProduto: 0,
+      idColor: selectedColor.id,
+      cantidad: amount,
+      idProducto: selectedProduct.id
+    });
   }
+
+  const checkEnableConfirmButtonModal = () => {
+    return amount > 0 && selectedColor !== null && selectedProduct !== null;
+  }
+
   return (
     <View>
         <CustomModal
@@ -38,14 +54,14 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
           showFooter={true}
           showButtonClose={false}
           onConfirm={callOnConfirmMethod}
-          enableConfirmButton={enableConfirmButtonModal}
+          enableConfirmButton={checkEnableConfirmButtonModal()}
           >
           <View style={[modalStyles.customContentContainer]}>
             <View style={{zIndex: 1001, marginBottom: 10}}>
               <CommonInput
                 label="Tipo de producto"
                 type="combo"
-                value={selectedProduct}
+                value={getProduct()}
                 items={products.map((x) => {
                   return { label: x.name, value: x.id };
                 })}
@@ -87,7 +103,8 @@ const modalStyles = StyleSheet.create({
     },
     customContentContainer:{
       width: '100%',
-      padding: 10
+      paddingVertical: 30,
+      paddingHorizontal: 10
     },
     toggle: {
       position: 'absolute',

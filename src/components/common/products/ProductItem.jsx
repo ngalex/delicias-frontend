@@ -8,20 +8,20 @@ import { Pressable } from 'react-native';
 export default function ProductItem({onClick, data}) {
 
   const bgList = [
-    CommonItemsProductStyles.itemBgRed,
     CommonItemsProductStyles.itemBgBlue,
-    CommonItemsProductStyles.itemBgYellow,
     CommonItemsProductStyles.itemBgGreen,
+    CommonItemsProductStyles.itemBgYellow,
+    CommonItemsProductStyles.itemBgPink,
+    CommonItemsProductStyles.itemBgOrange
   ];
 
   const getIconProduct = (idProduct) => {
-    console.log(data);
     switch (idProduct) {
-      case 1:
+      case "1":
         return <IconFont5 name='apple-alt' size={30} color="#707070"/>
-      case 2:
+      case "2":
         return <IconMCI name='popcorn' size={30} color="#707070"/>
-      case 3:
+      case "3":
         return <IconMCI name='tree' size={30} color="#707070"/>
       default:
         console.log(`Error. Id incorrecto ${idProduct}`);
@@ -32,12 +32,12 @@ export default function ProductItem({onClick, data}) {
     <Pressable
     onPress={() => onClick(data.idDetalleDeProduto)}
     key={data.idDetalleDeProduto}
-    style={[CommonItemsProductStyles.itemContainer, bgList[0]]}
+    style={[CommonItemsProductStyles.itemContainer, bgList[data.idColor]]}
     >
       <Text style={CommonItemsProductStyles.itemCount}>
         {data.cantidad}
       </Text>
-      {getIconProduct(data.producto.IDProducto)}
+      {getIconProduct(data.idProducto)}
     </Pressable>
   )
 }
