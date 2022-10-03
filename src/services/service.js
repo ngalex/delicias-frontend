@@ -56,7 +56,26 @@ export const addCliente = async (cliente) => {
 //Pedidos
 //Obtener todos los pedidos
 export const getPedidos = async () => {
-  const { error, data } = await supabase.from("pedidos").select();
+    //#region Ejemplo de response
+  // [
+  //   {
+  //     "anticipo": 50,
+  //     "cliente_id": 1,
+  //     "clientName": "Nombre",
+  //     "clientLastName": "Nombre",
+  //     "created_at": "2022-09-29T06:04:48.279383+00:00",
+  //     "delivery": true,
+  //     "direccionEntrega": "prueba9999",
+  //     "estado": "pendiente",
+  //     "fechaEntrega": "2022-02-19",
+  //     "id": 32,
+  //     "montoTotal": 100,
+  //     "productor_id": 1
+  //     "producerName": "Nombre"
+  //   }
+  // ]
+  //#endregion
+  const { error, data } = await supabase.from("ordersview").select();
   if (error) throw error;
   return data;
 };
