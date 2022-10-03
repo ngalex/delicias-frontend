@@ -14,12 +14,14 @@ import CommonItemsProduct from "../../components/common/items-producto/items-pro
 import { clientes } from "../../data/clientes";
 import ProductItemModal from "../../components/common/modals/ProductItemModal";
 import { productos } from "../../data/productos";
+import * as AppService from '../../services/service'
 //BUG: cuando se pre cargan los datos del cliente con el bton BUSCAR CLIENTE, los valores de 'participaSorteo' y 'participaPromocion' tambien 
 //son cargados en el objeto 'client' pero no se actualiza el valor de los switchs. Por lo que si alguno viene en true, el switch va a seguir viendose apagado
 //se arregla con useEffects
 
 export default function NuevoPedido({ navigation }) {
-
+  const [producerList, setproducerList] = useState([]);
+  AppService.getProductores().then((response) => setproducerList(response)).catch((err) => console.log(err));
   useEffect(() => {
     let newAmount = detailProducts.reduce((partialSum, dp) => {
       const price = productos.find( p => p.id === dp.idProducto).precio
@@ -228,7 +230,7 @@ export default function NuevoPedido({ navigation }) {
                   ? { label: producer.nombre, value: producer.id }
                   : producerInitialState
               }
-              items={productores.map((x) => {
+              items={producerList.map((x) => {
                 return { label: x.nombre, value: x.id };
               })}
               onChangeInput={(val) => {
@@ -245,7 +247,7 @@ export default function NuevoPedido({ navigation }) {
             type="switch"
             onChangeInput={(val) => {
               setIsEnabledDelivery(val);
-              setorder({ ...order, delivery: val })
+              setorder({ ...order, delivery: val });
             }}
           ></CommonInput>
         </View>
