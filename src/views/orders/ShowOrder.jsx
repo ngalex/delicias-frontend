@@ -17,18 +17,16 @@ export default function ShowOrder({ route, navigation }) {
   const { idpedido, editable } = route.params;
   const [isEditable, setisEditable] = useState(editable ? true : false);
   navigation.setOptions({ title: `Pedido #${idpedido}` });
-  const [order, setorder] = useState(
-    pedidos.find((x) => x.idPedido == idpedido)
+  const initialOrder = pedidos.find((x) => x.idPedido == idpedido);
+  const [order, setorder] = useState(initialOrder);
+  const initialClient = clientes.find((x) => x.id == order.idCliente);
+  const [client, setclient] = useState(initialClient);
+  const initialProducer = productores.find((x) => x.id == order.idProductor);
+  const [producer, setproducer] = useState(initialProducer);
+  const initialDetails = detallesproducto.filter(
+    (x) => x.idPedido == order.idPedido
   );
-  const [client, setclient] = useState(
-    clientes.find((x) => x.id == order.idCliente)
-  );
-  const [producer, setproducer] = useState(
-    productores.find((x) => x.id == order.idProductor)
-  );
-  const [details, setdetails] = useState(
-    detallesproducto.filter((x) => x.idPedido == order.idPedido)
-  );
+  const [details, setdetails] = useState(initialDetails);
   const [showModal, setShowModal] = useState(false);
   const [enableConfirmButtonModal, setEnableConfirmButtonModal] =
     useState(false);
