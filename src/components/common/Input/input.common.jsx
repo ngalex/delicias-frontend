@@ -66,7 +66,7 @@ export default function CommonInput(prop) {
         <DropDownPicker
           key={value ? value.label : 0}
           open={open}
-          value={value}
+          value={inputValue}
           items={items}
           setValue={setinputValue}
           setOpen={setOpen}
