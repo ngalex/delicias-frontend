@@ -303,7 +303,7 @@ export default function NuevoPedido({ navigation }) {
         <ProductItemModal 
           onConfirm={setNewOrEditedProduct}
           showModal={showModal}
-          setShowModal={setShowModal} 
+          setShowModal={setShowModal}
           data={selectedProductItem}/>
         <CommonItemsProduct
           items={detailProducts}
@@ -345,13 +345,16 @@ export default function NuevoPedido({ navigation }) {
             title="Confirmar"
             backgroundColor="#AEC8F1"
             width="45%"
-            onPress={() => navigation.navigate("HomeScreen")}
+            onPress={() => { registerOrder(); navigation.navigate("HomeScreen");}}
           ></ButtonP>
         </View>
       </View>
     );
   };
 
+  const registerOrder = () => {
+    console.log(order);
+  }
   //#region Modal de Producto
 
   const productItemModalHandler = (product) => {
