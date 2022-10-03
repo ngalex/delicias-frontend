@@ -7,7 +7,7 @@ import { Button, Icon } from 'react-native-elements';
 
 export default function CustomModal(props) {
 
-    const {visible, setShowModal, children, title, showFooter, showButtonClose, enableConfirmButton, onConfirm} = props;
+    const {visible, setShowModal, children, title, showFooter, showButtonClose, enableConfirmButton, onConfirm, onShowModal} = props;
     const renderFooter = () => {
         if (showFooter) {
             return (
@@ -43,7 +43,7 @@ export default function CustomModal(props) {
 
     return (
         <>
-        <Modal visible={visible} animationType={'fade'} transparent= {true}>
+        <Modal onShow={onShowModal} visible={visible} animationType={'fade'} transparent= {true}>
             <View style={styles.backdrop}></View>
             <View style={styles.container}>
                 <View style={styles.modalContainer}>

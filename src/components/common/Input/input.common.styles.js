@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import Constants from 'expo-constants';
+import { baseColors } from "../../../constants/baseColors";
 
 export const inputCommonStyles = StyleSheet.create({
     container: {
@@ -9,7 +10,9 @@ export const inputCommonStyles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         paddingLeft: 10,
-        paddingRight: 10
+        paddingRight: 10,
+        elevation: 5,
+        shadowColor: baseColors.shadowColor
     },
     label: {
         marginBottom: 5,

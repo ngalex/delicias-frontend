@@ -12,12 +12,22 @@ import { ButtonP } from "../../components/common/buttons/ButtonP";
 import productores from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import { clientes } from "../../data/clientes";
+import ProductItemModal from "../../components/common/modals/ProductItemModal";
 
 //BUG: cuando se pre cargan los datos del cliente con el bton BUSCAR CLIENTE, los valores de 'participaSorteo' y 'participaPromocion' tambien 
 //son cargados en el objeto 'client' pero no se actualiza el valor de los switchs. Por lo que si alguno viene en true, el switch va a seguir viendose apagado
 //se arregla con useEffects
 
 export default function NuevoPedido({ navigation }) {
+
+  useEffect(() => {
+    let newAmount = detailProducts.reduce((partialSum, dp) => {
+      const price = products.find( p => p.id === dp.idProducto).precio
+      return partialSum + price * dp.cantidad
+    }, 0);
+    setamount(newAmount)
+  })
+  
   const [last, setlast] = useState(false);
   const clientInitialState = {
     id: 1,
@@ -55,6 +65,19 @@ export default function NuevoPedido({ navigation }) {
   const [isEnabledSorteo, setIsEnabledSorteo] = useState(false);
   const [isEnabledOffer, setIsEnabledOffer] = useState(false);
   const [isEnabledDelivery, setIsEnabledDelivery] = useState(false);
+
+  const [detailProducts, setDetailProducts] = useState([])
+
+  const products = [
+    {id: 1, name:'Manzanas', precio: 90},
+    {id: 2,name:'Pochoclos', precio: 50},
+    {id:3, name:'Copos de Azucar', precio: 80}
+  ];
+
+  //UseStates para Modal
+  const [showModal, setShowModal] = useState(false)
+  const [selectedProductItem, setSelectedProductItem] = useState()
+  //
 
   const loadClientForm = (clientData) => {
     return (
@@ -279,12 +302,18 @@ export default function NuevoPedido({ navigation }) {
     return (
       <View>
         <Text style={NewOrderStyles.subtitle}>Seleccionar Productos</Text>
-
+        <ProductItemModal 
+          onConfirm={setNewOrEditedProduct}
+          showModal={showModal}
+          setShowModal={setShowModal} 
+          data={selectedProductItem}/>
         <CommonItemsProduct
+          items={detailProducts}
+          setData={setDetailProducts}
           onChangeDetails={(details) => {
-            console.log(details);
             handleUpdateDetails(details);
           }}
+          productItemModalHandler = {productItemModalHandler}
         ></CommonItemsProduct>
 
         <Text style={NewOrderStyles.subtitle}>Importe a Pagar</Text>
@@ -323,6 +352,27 @@ export default function NuevoPedido({ navigation }) {
       </View>
     );
   };
+
+  //#region Modal de Producto
+
+  const productItemModalHandler = (product) => {
+    setSelectedProductItem(product);
+    setShowModal(!showModal);
+  }
+  
+  const setNewOrEditedProduct = (detail) => {
+    if (detail.idDetalleDeProducto === -1) {
+      detail.idDetalleDeProducto = detailProducts.length;
+      setDetailProducts([...detailProducts, detail])
+    } else {
+      const indx = detailProducts.findIndex( (prod) => prod.idDetalleDeProducto === detail.idDetalleDeProducto);
+      const detailProductsAux = detailProducts;
+      detailProductsAux[indx] = detail;
+      setDetailProducts(detailProductsAux)
+    }
+    setShowModal(!showModal);
+  }
+  //#endregion
 
   return (
     <ScrollView style={NewOrderStyles.container}>

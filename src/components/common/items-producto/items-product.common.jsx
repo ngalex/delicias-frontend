@@ -2,7 +2,8 @@ import React from "react";
 import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { CommonItemsProductStyles } from "./items-product.common.styles";
-import OptionGrid from "../buttons/BigButton";
+import ProductItem from "../products/ProductItem";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 /**
  * prop.items es un array de Detalle producto
@@ -89,22 +90,23 @@ const CommonItemsProduct = (props) => {
 
   const onAddButton = () => {
     // ToDO: llamar modal, recuperar Detalle de Producto.
-    let detail = {
-      idDetalleDeProduto: 0,
-      producto: {
-        IDProducto: 2,
-        nombre: "algodón de azúcar",
-        precio: 150.0,
-        estado: "activo",
-      },
-      cantidad: 5,
-      color: "rojo",
-    };
+    props.productItemModalHandler();
+    // let detail = {
+    //   idDetalleDeProduto: 0,
+    //   producto: {
+    //     IDProducto: 2,
+    //     nombre: "algodón de azúcar",
+    //     precio: 150.0,
+    //     estado: "activo",
+    //   },
+    //   cantidad: 5,
+    //   color: "rojo",
+    // };
 
-    let details = addDetail(detail);
-    setitems(details);
-    props.onChangeDetails(details);
-    return;
+    // let details = addDetail(detail);
+    // setitems(details);
+    // props.onChangeDetails(details);
+    // return;
   };
 
   const addDetail = (detail) => {
@@ -138,33 +140,26 @@ const CommonItemsProduct = (props) => {
   };
 
   const showItems = () => {
-    if (items.length > 0) {
-      return items.map((value, index) => (
-        <Pressable
-          onPress={() => removeDetail(value.producto.IDProducto)}
-          key={index}
-          style={[CommonItemsProductStyles.itemContainer, bgList[nextStyle()]]}
-        >
-          <Text style={CommonItemsProductStyles.itemCount}>
-            {value.cantidad}
-          </Text>
-          <Text style={CommonItemsProductStyles.itemIcon}>
-            {value.producto.nombre}
-          </Text>
-        </Pressable>
+    if (props.items.length > 0) {
+      return props.items.map((value, index) => (
+        <ProductItem
+        key={value.idDetalleDeProduto}
+          onClick={() => props.productItemModalHandler(value)}
+          data={value}
+        />
       ));
     }
   };
 
   return (
     <View style={CommonItemsProductStyles.container}>
+      {showItems()}
       <Pressable
-        style={{ width: 80, height: 100 }}
+        style={CommonItemsProductStyles.itemContainer}
         onPress={() => onAddButton()}
       >
-        <OptionGrid item="+"></OptionGrid>
+        <Icon name='plus' size={40} color="#8E8E8E" style={{}}/>
       </Pressable>
-      {showItems()}
     </View>
   );
 };
