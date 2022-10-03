@@ -13,6 +13,7 @@ import { ButtonP } from "../../components/common/buttons/ButtonP";
 import { ScrollView } from "react-native";
 import ProductItemModal from "../../components/common/modals/ProductItemModal";
 import { productos } from "../../data/productos";
+import SelectList from "react-native-dropdown-select-list";
 
 export default function ShowOrder({ route, navigation }) {
   useEffect(() => {
@@ -37,8 +38,15 @@ export default function ShowOrder({ route, navigation }) {
   const [details, setdetails] = useState(initialDetails);
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showFinishModal, setshowFinishModal] = useState(false);
+  const [showCancelModal, setshowCancelModal] = useState(false);
   const [selectedProductItem, setSelectedProductItem] = useState();
   const [amount, setamount] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const data = [
+      {id:'1',value:'anulado'},
+      {id:'2',value:'cancelado'},
+  ];
 
   const updateOrder = () => {
     let valid = true;
@@ -55,6 +63,7 @@ export default function ShowOrder({ route, navigation }) {
     }
 
     // llamada al servicio de update order
+    navigation.navigate("HomeScreen");
     return;
   };
 
@@ -267,7 +276,9 @@ export default function ShowOrder({ route, navigation }) {
                 title="Finalizar"
                 width={300}
                 backgroundColor="#F9C3C3"
-                onPress={() => {}}
+                onPress={() => {
+                  setshowFinishModal(true);
+                }}
               ></ButtonP>
             </View>
             <View style={{ paddingBottom: 10 }}>
@@ -275,7 +286,7 @@ export default function ShowOrder({ route, navigation }) {
                 title="Dar de baja"
                 width={300}
                 backgroundColor="#F9C3C3"
-                onPress={() => {}}
+                onPress={() => {setshowCancelModal(true)}}
               ></ButtonP>
             </View>
             <View style={{ paddingBottom: 10 }}>
@@ -283,9 +294,90 @@ export default function ShowOrder({ route, navigation }) {
                 title="Cancelar"
                 width={300}
                 backgroundColor="#ABABAB"
-                onPress={() => {setShowOptionsModal(false)}}
+                onPress={() => {
+                  setShowOptionsModal(false);
+                }}
               ></ButtonP>
             </View>
+          </View>
+        </CustomModal>
+        <CustomModal
+          visible={showFinishModal}
+          setShowModal={setshowFinishModal}
+          title={"Finalizar Pedido"}
+          showFooter={true}
+          showButtonClose={false}
+          enableConfirmButton={true}
+          onConfirm={() => {
+            setorder({ ...order, estado: "finalizado" });
+            updateOrder();
+            setshowFinishModal(false);
+          }}
+        >
+          <View
+            style={[
+              ShowOrderStyles.customContentContainer,
+              { paddingBottom: 50, paddingTop: 20 },
+            ]}
+          >
+            <Text style={{ fontSize: 18, textAlign: "center" }}>
+              ¿Estas seguro de que deseas finalizar el pedido?
+            </Text>
+          </View>
+        </CustomModal>
+
+        <CustomModal
+          visible={showCancelModal}
+          setShowModal={setshowCancelModal}
+          title={`Dar de Baja el pedido #${order.id}`}
+          showFooter={true}
+          showButtonClose={false}
+          enableConfirmButton={selectedStatus ? true :  false}
+          onConfirm={() => {
+            setorder({ ...order, estado: selectedStatus});
+            updateOrder();
+            setshowCancelModal(false);
+          }}
+        >
+          <View
+            style={[
+              ShowOrderStyles.customContentContainer,
+              { paddingBottom: 50, paddingTop: 20 },
+            ]}
+          >
+            <Text style={{ fontSize: 18, textAlign: "center" }}>
+              Esta a punto de dar de baja un pedido ¿Desea Anularlo o
+              Cancelarlo?
+            </Text>
+            <SelectList
+              search={false}
+              placeholder={"Selecciona un estado"}
+              setSelected={setSelectedStatus}
+              data={data}
+              dropdownStyles={{
+                shadowColor: "#000",
+                elevation: 24,
+                borderWidth: 0,
+                zIndex: 200,
+                backgroundColor: "#FAFAFA",
+              }}
+              inputStyles={{
+                color: "#8E8E8E",
+                fontSize: 18,
+                fontWeight: "500",
+              }}
+              dropdownTextStyles={{
+                color: "#8E8E8E",
+                fontSize: 18,
+                fontWeight: "500",
+              }}
+              boxStyles={{
+                borderWidth: 0,
+                backgroundColor: "#FAFAFA",
+                shadowColor: "#333",
+                elevation: 4,
+              }}
+            />
           </View>
         </CustomModal>
       </View>
