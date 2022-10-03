@@ -52,17 +52,6 @@ export default function CommonInput(prop) {
     );
   };
 
-  const getInputValue = () => {
-
-    console.log(value);
-    if (inputValue === null && value){
-      const aux = { label: value.name, value: value.id};
-      return aux
-    } else {
-      return inputValue
-    }
-  }
-
   const comboInput = () => {
     const [open, setOpen] = useState(false);
     return (

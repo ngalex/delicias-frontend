@@ -12,8 +12,6 @@ import { ButtonP } from "../../components/common/buttons/ButtonP";
 import productores from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import { clientes } from "../../data/clientes";
-import CustomModal from './../../components/common/modals/CustomModal';
-import { SelectList } from 'react-native-dropdown-select-list';
 import ProductItemModal from "../../components/common/modals/ProductItemModal";
 
 //BUG: cuando se pre cargan los datos del cliente con el bton BUSCAR CLIENTE, los valores de 'participaSorteo' y 'participaPromocion' tambien 
@@ -21,6 +19,15 @@ import ProductItemModal from "../../components/common/modals/ProductItemModal";
 //se arregla con useEffects
 
 export default function NuevoPedido({ navigation }) {
+
+  useEffect(() => {
+    let newAmount = detailProducts.reduce((partialSum, dp) => {
+      const price = products.find( p => p.id === dp.idProducto).precio
+      return partialSum + price * dp.cantidad
+    }, 0);
+    setamount(newAmount)
+  })
+  
   const [last, setlast] = useState(false);
   const clientInitialState = {
     id: 1,
@@ -60,6 +67,12 @@ export default function NuevoPedido({ navigation }) {
   const [isEnabledDelivery, setIsEnabledDelivery] = useState(false);
 
   const [detailProducts, setDetailProducts] = useState([])
+
+  const products = [
+    {id: 1, name:'Manzanas', precio: 90},
+    {id: 2,name:'Pochoclos', precio: 50},
+    {id:3, name:'Copos de Azucar', precio: 80}
+  ];
 
   //UseStates para Modal
   const [showModal, setShowModal] = useState(false)
@@ -289,7 +302,11 @@ export default function NuevoPedido({ navigation }) {
     return (
       <View>
         <Text style={NewOrderStyles.subtitle}>Seleccionar Productos</Text>
-        <ProductItemModal onConfirm={setNewOrEditedProduct} showModal={showModal} setShowModal={setShowModal} data={selectedProductItem}/>
+        <ProductItemModal 
+          onConfirm={setNewOrEditedProduct}
+          showModal={showModal}
+          setShowModal={setShowModal} 
+          data={selectedProductItem}/>
         <CommonItemsProduct
           items={detailProducts}
           setData={setDetailProducts}
@@ -344,10 +361,15 @@ export default function NuevoPedido({ navigation }) {
   }
   
   const setNewOrEditedProduct = (detail) => {
-    if (detail.idDetalleDeProducto === 0) {
-      detail.idDetalleDeProducto = detailProducts.length
+    if (detail.idDetalleDeProducto === -1) {
+      detail.idDetalleDeProducto = detailProducts.length;
+      setDetailProducts([...detailProducts, detail])
+    } else {
+      const indx = detailProducts.findIndex( (prod) => prod.idDetalleDeProducto === detail.idDetalleDeProducto);
+      const detailProductsAux = detailProducts;
+      detailProductsAux[indx] = detail;
+      setDetailProducts(detailProductsAux)
     }
-    setDetailProducts([...detailProducts, detail])
     setShowModal(!showModal);
   }
   //#endregion

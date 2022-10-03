@@ -8,6 +8,7 @@ import { Pressable } from 'react-native';
 export default function ProductItem({onClick, data}) {
 
   const bgList = [
+    CommonItemsProductStyles.itemBgWhite,
     CommonItemsProductStyles.itemBgBlue,
     CommonItemsProductStyles.itemBgGreen,
     CommonItemsProductStyles.itemBgYellow,
@@ -17,11 +18,11 @@ export default function ProductItem({onClick, data}) {
 
   const getIconProduct = (idProduct) => {
     switch (idProduct) {
-      case "1":
+      case 1:
         return <IconFont5 name='apple-alt' size={30} color="#707070"/>
-      case "2":
+      case 2:
         return <IconMCI name='popcorn' size={30} color="#707070"/>
-      case "3":
+      case 3:
         return <IconMCI name='tree' size={30} color="#707070"/>
       default:
         console.log(`Error. Id incorrecto ${idProduct}`);

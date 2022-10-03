@@ -2,7 +2,6 @@ import React from "react";
 import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { CommonItemsProductStyles } from "./items-product.common.styles";
-import BigButton from "../buttons/BigButton";
 import ProductItem from "../products/ProductItem";
 import Icon from "react-native-vector-icons/FontAwesome5";
 

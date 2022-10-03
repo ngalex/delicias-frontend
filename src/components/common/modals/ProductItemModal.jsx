@@ -1,44 +1,50 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import CustomModal from './CustomModal';
 import CommonInput from '../Input/input.common';
 import AmountWidget from '../AmountWidget';
 export default function ProductItemModal({onConfirm, showModal, setShowModal, data}) {
+  const [selectedProduct, setSelectedProduct] = useState();
+  const [selectedColor, setSelectedColor] = useState();
+  const [amount, setAmount] = useState(0);
+  
+  useEffect(() => {
+    if (amount === 0 && data && data.cantidad) {
+      setAmount(data.cantidad);
+    }
+    if (selectedProduct === null && data && data.idProducto) {
+      setSelectedProduct(data.idProducto);
+    }
+    if (selectedColor === null && data && data.idColor) {
+      setSelectedColor(data.idColor);
+    }
+  });
+
   const products = [
-    {id:'1',name:'Manzanas'},
-    {id:'2',name:'Pochoclos'},
-    {id:'3',name:'Copos de Azucar'}
+    {id: 1, name:'Manzanas'},
+    {id: 2,name:'Pochoclos'},
+    {id:3, name:'Copos de Azucar'}
   ];
-  const [selectedProduct, setSelectedProduct] = useState(data ? products.find((x) => x.id === data.idProducto) : null);
-  const [selectedColor, setSelectedColor] = useState(data ? data.idColor : null);
-  const [amount, setAmount] = useState(data ? data.cantidad : 0);
-
-  const getProduct = () => {
-    // if (data && data.idProducto) {
-    //   const product = products.find((x) => x.id === data.idProducto);
-    //   return product
-    // }
-    return products.find((x) => x.id === data.idProducto)
-  }
-
   const colors = [
-    {id:'0',name:'Celeste'},
-    {id:'1',name:'Verde'},
-    {id:'2',name:'Amarillo'},
-    {id:'3',name:'Rosa'},
-    {id:'4',name:'Naranja'}
+    {id: 1, name:'Celeste'},
+    {id: 2, name:'Verde'},
+    {id: 3, name:'Amarillo'},
+    {id: 4, name:'Rosa'},
+    {id: 5, name:'Naranja'}
   ];
 
   const callOnConfirmMethod = () => {
-    setAmount(0);
-    setSelectedColor(null);
-    setSelectedProduct(null);
     onConfirm({
-      idDetalleDeProduto: 0,
-      idColor: selectedColor.id,
+      idDetalleDeProducto: data ? data.idDetalleDeProducto : -1,
+      idColor: selectedColor,
       cantidad: amount,
-      idProducto: selectedProduct.id
+      idProducto: selectedProduct
     });
+  }
+  const onShowModal = () => {
+      setAmount(0);
+      setSelectedProduct(null);
+      setSelectedColor(null);
   }
 
   const checkEnableConfirmButtonModal = () => {
@@ -54,6 +60,7 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
           showFooter={true}
           showButtonClose={false}
           onConfirm={callOnConfirmMethod}
+          onShowModal={onShowModal}
           enableConfirmButton={checkEnableConfirmButtonModal()}
           >
           <View style={[modalStyles.customContentContainer]}>
@@ -61,12 +68,12 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
               <CommonInput
                 label="Tipo de producto"
                 type="combo"
-                value={getProduct()}
+                value={data && data.idProducto ? data.idProducto : null}
                 items={products.map((x) => {
                   return { label: x.name, value: x.id };
                 })}
                 onChangeInput={(val) => {
-                  setSelectedProduct(products.find((x) => x.id == val.value));
+                  setSelectedProduct(val.value);
                 }}
               />
             </View>
@@ -74,12 +81,12 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
               <CommonInput
                 label="Color del producto"
                 type="combo"
-                value={selectedColor}
+                value={data && data.idColor ? data.idColor : null}
                 items={colors.map((x) => {
                   return { label: x.name, value: x.id };
                 })}
                 onChangeInput={(val) => {
-                  setSelectedColor(colors.find((x) => x.id == val.value));
+                  setSelectedColor(val.value);
                 }}
               />
             </View>
@@ -89,8 +96,6 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
     </View>
   )
 }
-
-const styles = StyleSheet.create({});
 
 const modalStyles = StyleSheet.create({
     backdrop:{

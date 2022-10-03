@@ -42,5 +42,8 @@ export const CommonItemsProductStyles = StyleSheet.create({
     },
     itemBgOrange: {
         backgroundColor: '#fee6b8'
+    },
+    itemBgWhite: {
+        backgroundColor: 'white'
     }
 });
