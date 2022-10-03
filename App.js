@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Finances from './src/views/finances/Finances';
 import Stocks from './src/views/Stocks/Stocks';
 import Tools from './src/views/Tools/Tools';
+import 'react-native-url-polyfill/auto';
 
 const Tab = createBottomTabNavigator();
 
