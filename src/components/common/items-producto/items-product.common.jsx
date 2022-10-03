@@ -94,36 +94,6 @@ export default function CommonItemsProduct(props) {
     // return;
   };
 
-  const addDetail = (detail) => {
-    if (!detail) return;
-    let details = [...detailList];
-
-    let item = details.find(
-      (item) => item.producto.IDProducto == detail.producto.IDProducto
-    );
-
-    if (!item) {
-      details.push(detail);
-      return details;
-    }
-
-    details.map((item) => {
-      if (item.producto.IDProducto == detail.producto.IDProducto) {
-        item.cantidad++;
-      }
-    });
-    return details;
-  };
-
-  const removeDetail = (IDProducto) => {
-    if (!IDProducto) return;
-    let details = detailList.filter(
-      (item) => item.producto.IDProducto != IDProducto
-    );
-    setdetails(details);
-    props.onChangeDetails(details);
-  };
-
   const showItems = () => {
     if (props.items.length > 0) {
       return props.items.map((value, index) => (

@@ -9,31 +9,38 @@ import React, { useState, useEffect } from "react";
 import CommonInput from "../../components/common/Input/input.common";
 import { NewOrderStyles } from "./NewOrder.styles";
 import { ButtonP } from "../../components/common/buttons/ButtonP";
-import {productores} from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import { clientes } from "../../data/clientes";
 import ProductItemModal from "../../components/common/modals/ProductItemModal";
 import { productos } from "../../data/productos";
-import * as AppService from '../../services/service'
-//BUG: cuando se pre cargan los datos del cliente con el bton BUSCAR CLIENTE, los valores de 'participaSorteo' y 'participaPromocion' tambien 
+import * as AppService from "../../services/service";
+//BUG: cuando se pre cargan los datos del cliente con el bton BUSCAR CLIENTE, los valores de 'participaSorteo' y 'participaPromocion' tambien
 //son cargados en el objeto 'client' pero no se actualiza el valor de los switchs. Por lo que si alguno viene en true, el switch va a seguir viendose apagado
 //se arregla con useEffects
 
 export default function NuevoPedido({ navigation }) {
-  const [producerList, setproducerList] = useState([]);
-  AppService.getProductores().then((response) => setproducerList(response)).catch((err) => console.log(err));
+  useEffect(() => {
+    AppService.getProductores()
+      .then((response) => {
+        setproducerList(response);
+        console.log(response);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   useEffect(() => {
     let newAmount = detailProducts.reduce((partialSum, dp) => {
-      const price = productos.find( p => p.id === dp.idProducto).precio
-      return partialSum + price * dp.cantidad
+      const price = productos.find((p) => p.id === dp.producto_id).precio;
+      return partialSum + price * dp.cantidad;
     }, 0);
     setamount(newAmount);
     if (client != clientInitialState) {
       setIsEnabledSorteo(client.participaSorteo);
       setIsEnabledOffer(client.participaPromocion);
     }
-  })
-  
+  });
+
+  const [producerList, setproducerList] = useState([]);
+
   const [last, setlast] = useState(false);
   const clientInitialState = {
     id: 1,
@@ -54,7 +61,9 @@ export default function NuevoPedido({ navigation }) {
   };
   const [client, setclient] = useState(clientInitialState);
   const [order, setorder] = useState({
-    IDPedido: 0,
+    pedido_id: 0,
+    cliente_id: 0,
+    productor_id: 0,
     direccionEntrega: null,
     fechaEntrega: null,
     estado: "pendiente",
@@ -64,7 +73,6 @@ export default function NuevoPedido({ navigation }) {
     suscriber: null,
   });
   const [producer, setproducer] = useState(producerInitialState);
-  const [details, setdetails] = useState([]);
   const [amount, setamount] = useState(0);
   const [isPreloadedClientData, setisPreloadedClientData] = useState(false);
 
@@ -72,11 +80,42 @@ export default function NuevoPedido({ navigation }) {
   const [isEnabledOffer, setIsEnabledOffer] = useState(false);
   const [isEnabledDelivery, setIsEnabledDelivery] = useState(false);
 
-  const [detailProducts, setDetailProducts] = useState([])
+  const [detailProducts, setDetailProducts] = useState([]);
 
   //UseStates para Modal
-  const [showModal, setShowModal] = useState(false)
-  const [selectedProductItem, setSelectedProductItem] = useState()
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProductItem, setSelectedProductItem] = useState();
+
+  const recordOrder = async () => {
+    console.log(order);
+    console.log(detailProducts);
+    console.log(producer);
+
+    let neworder = {
+      direccionEntrega: order.direccionEntrega,
+      fechaEntrega: new Date(order.direccionEntrega),
+      estado: "pendiente",
+      montoTotal: amount,
+      anticipo: amount / 2,
+      delivery: order.delivery,
+      productor_id: producer.id,
+      cliente_id: client.id,
+    };
+
+    let newdetails = detailProducts.map((x) => {
+      return {
+        cantidad: x.cantidad,
+        color: x.color,
+        producto_id: x.producto_id,
+      };
+    });
+
+    let result = await AppService.addPedido(order.neworder, newdetails)
+      .then((response) => response)
+      .catch((err) => err);
+
+    console.log("ok: ", result);
+  };
 
   const loadClientForm = (clientData) => {
     return (
@@ -154,11 +193,10 @@ export default function NuevoPedido({ navigation }) {
           <CommonInput
             type="switch"
             value={isEnabledOffer}
-            onChangeInput={(val) =>{
+            onChangeInput={(val) => {
               setIsEnabledOffer(val);
-              setclient({ ...client, participaPromocion: val })
-            }
-            }
+              setclient({ ...client, participaPromocion: val });
+            }}
           ></CommonInput>
         </View>
         <View
@@ -172,11 +210,10 @@ export default function NuevoPedido({ navigation }) {
           <CommonInput
             type="switch"
             value={isEnabledSorteo}
-            onChangeInput={(val) =>{
+            onChangeInput={(val) => {
               setIsEnabledSorteo(val);
-              setclient({ ...client, participaSorteo: val })
-            }
-            }
+              setclient({ ...client, participaSorteo: val });
+            }}
           ></CommonInput>
         </View>
       </View>
@@ -236,7 +273,7 @@ export default function NuevoPedido({ navigation }) {
               onChangeInput={(val) => {
                 setproducer({
                   ...producer,
-                  ...productores.find((x) => x.id == val.value),
+                  ...producerList.find((x) => x.id == val.value),
                 });
               }}
             ></CommonInput>
@@ -302,19 +339,20 @@ export default function NuevoPedido({ navigation }) {
     return (
       <View>
         <Text style={NewOrderStyles.subtitle}>Seleccionar Productos</Text>
-        <ProductItemModal 
+        <ProductItemModal
           onConfirm={setNewOrEditedProduct}
           showModal={showModal}
-          setShowModal={setShowModal} 
-          data={selectedProductItem}/>
+          setShowModal={setShowModal}
+          data={selectedProductItem}
+        />
         <CommonItemsProduct
           items={detailProducts}
           setData={setDetailProducts}
-          editable = {true}
+          editable={true}
           onChangeDetails={(details) => {
             handleUpdateDetails(details);
           }}
-          productItemModalHandler = {productItemModalHandler}
+          productItemModalHandler={productItemModalHandler}
         ></CommonItemsProduct>
 
         <Text style={NewOrderStyles.subtitle}>Importe a Pagar</Text>
@@ -347,7 +385,10 @@ export default function NuevoPedido({ navigation }) {
             title="Confirmar"
             backgroundColor="#AEC8F1"
             width="45%"
-            onPress={() => navigation.navigate("HomeScreen")}
+            onPress={async () => {
+              await recordOrder();
+              // navigation.navigate("HomeScreen");
+            }}
           ></ButtonP>
         </View>
       </View>
@@ -359,20 +400,22 @@ export default function NuevoPedido({ navigation }) {
   const productItemModalHandler = (product) => {
     setSelectedProductItem(product);
     setShowModal(!showModal);
-  }
-  
+  };
+
   const setNewOrEditedProduct = (detail) => {
     if (detail.idDetalleDeProducto === -1) {
       detail.idDetalleDeProducto = detailProducts.length;
-      setDetailProducts([...detailProducts, detail])
+      setDetailProducts([...detailProducts, detail]);
     } else {
-      const indx = detailProducts.findIndex( (prod) => prod.idDetalleDeProducto === detail.idDetalleDeProducto);
+      const indx = detailProducts.findIndex(
+        (prod) => prod.idDetalleDeProducto === detail.idDetalleDeProducto
+      );
       const detailProductsAux = detailProducts;
       detailProductsAux[indx] = detail;
-      setDetailProducts(detailProductsAux)
+      setDetailProducts(detailProductsAux);
     }
     setShowModal(!showModal);
-  }
+  };
   //#endregion
 
   return (

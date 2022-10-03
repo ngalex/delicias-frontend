@@ -12,8 +12,8 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
     if (amount === 0 && data && data.cantidad) {
       setAmount(data.cantidad);
     }
-    if (selectedProduct === null && data && data.idProducto) {
-      setSelectedProduct(data.idProducto);
+    if (selectedProduct === null && data && data.producto_id) {
+      setSelectedProduct(data.producto_id);
     }
     if (selectedColor === null && data && data.idColor) {
       setSelectedColor(data.idColor);
@@ -38,7 +38,7 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
       idDetalleDeProducto: data ? data.idDetalleDeProducto : -1,
       idColor: selectedColor,
       cantidad: amount,
-      idProducto: selectedProduct
+      producto_id: selectedProduct,
     });
   }
   const onShowModal = () => {
@@ -53,48 +53,48 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
 
   return (
     <View>
-        <CustomModal
-          visible={showModal} 
-          setShowModal={setShowModal} 
-          title={'Agregar Producto'}
-          showFooter={true}
-          showButtonClose={false}
-          onConfirm={callOnConfirmMethod}
-          onShowModal={onShowModal}
-          enableConfirmButton={checkEnableConfirmButtonModal()}
-          >
-          <View style={[modalStyles.customContentContainer]}>
-            <View style={{zIndex: 1001, marginBottom: 10}}>
-              <CommonInput
-                label="Tipo de producto"
-                type="combo"
-                value={data && data.idProducto ? data.idProducto : null}
-                items={products.map((x) => {
-                  return { label: x.name, value: x.id };
-                })}
-                onChangeInput={(val) => {
-                  setSelectedProduct(val.value);
-                }}
-              />
-            </View>
-            <View style={{marginBottom: 10}}>
-              <CommonInput
-                label="Color del producto"
-                type="combo"
-                value={data && data.idColor ? data.idColor : null}
-                items={colors.map((x) => {
-                  return { label: x.name, value: x.id };
-                })}
-                onChangeInput={(val) => {
-                  setSelectedColor(val.value);
-                }}
-              />
-            </View>
-            <AmountWidget amount={amount} setAmount={setAmount}/>
+      <CustomModal
+        visible={showModal}
+        setShowModal={setShowModal}
+        title={"Agregar Producto"}
+        showFooter={true}
+        showButtonClose={false}
+        onConfirm={callOnConfirmMethod}
+        onShowModal={onShowModal}
+        enableConfirmButton={checkEnableConfirmButtonModal()}
+      >
+        <View style={[modalStyles.customContentContainer]}>
+          <View style={{ zIndex: 1001, marginBottom: 10 }}>
+            <CommonInput
+              label="Tipo de producto"
+              type="combo"
+              value={data && data.producto_id ? data.producto_id : null}
+              items={products.map((x) => {
+                return { label: x.name, value: x.id };
+              })}
+              onChangeInput={(val) => {
+                setSelectedProduct(val.value);
+              }}
+            />
           </View>
-        </CustomModal>
+          <View style={{ marginBottom: 10 }}>
+            <CommonInput
+              label="Color del producto"
+              type="combo"
+              value={data && data.idColor ? data.idColor : null}
+              items={colors.map((x) => {
+                return { label: x.name, value: x.id };
+              })}
+              onChangeInput={(val) => {
+                setSelectedColor(val.value);
+              }}
+            />
+          </View>
+          <AmountWidget amount={amount} setAmount={setAmount} />
+        </View>
+      </CustomModal>
     </View>
-  )
+  );
 }
 
 const modalStyles = StyleSheet.create({

@@ -1,8 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { View, Text } from "react-native";
-import { pedidos } from "../../data/pedidos";
 import CommonInput from "../../components/common/Input/input.common";
-import { clientes } from "../../data/clientes";
 import { productores } from "../../data/productores";
 import { detallesproducto } from "../../data/detalle-producto";
 import { getFormatedDate } from "react-native-modern-datepicker";
@@ -14,11 +12,37 @@ import { ScrollView } from "react-native";
 import ProductItemModal from "../../components/common/modals/ProductItemModal";
 import { productos } from "../../data/productos";
 import SelectList from "react-native-dropdown-select-list";
+import * as AppService from "../../services/service";
+import Voucher from "../../components/common/voucher/voucher.common";
 
 export default function ShowOrder({ route, navigation }) {
   useEffect(() => {
+    AppService.getPedidoById(idpedido)
+      .then((response) => {
+        console.log("load order: ", response);
+        setorder(response ? response : initialOrder);
+
+        AppService.getClienteById(order.cliente_id)
+          .then((response) => {
+            console.log("load client: ", response);
+            setorder(response ? response : initialClient);
+          })
+          .catch((err) => console.log("load client error: ", err));
+        AppService.getProductores()
+          .then((response) => {
+            if (response) {
+              console.log("load producer: ", response);
+              let producer = response.find((x) => x.id == order.productor_id);
+              setproducer(producer ? producer : initialProducer);
+            }
+          })
+          .catch((err) => console.log("load producer error: ", err));
+      })
+      .catch((err) => console.log("load order error: ", err));
+  }, [order]);
+  useEffect(() => {
     let newAmount = details.reduce((partialSum, dp) => {
-      const price = productos.find((p) => p.id === dp.idProducto).precio;
+      const price = productos.find((p) => p.id === dp.producto_id).precio;
       return partialSum + price * dp.cantidad;
     }, 0);
     setamount(newAmount);
@@ -26,14 +50,40 @@ export default function ShowOrder({ route, navigation }) {
   const { idpedido, editable } = route.params;
   const [isEditable, setisEditable] = useState(editable ? true : false);
   navigation.setOptions({ title: `Pedido #${idpedido}` });
-  const initialOrder = pedidos.find((x) => x.idPedido == idpedido);
+  const initialOrder = {
+    idPedido: -1,
+    direccionEntrega: "",
+    fechaEntrega: new Date(),
+    estado: "pendiente",
+    montoTotal: 0,
+    anticipo: 0,
+    delivery: false,
+    productor_id: -1,
+    cliente_id: -1,
+  };
+
   const [order, setorder] = useState(initialOrder);
-  const initialClient = clientes.find((x) => x.id == order.idCliente);
+  const initialClient = {
+    id: -1,
+    nombre: "",
+    apellido: "",
+    dni: "",
+    telefono: 0,
+    email: "",
+    direccion: "",
+    participaSorteo: false,
+    participaPromocion: false,
+  };
   const [client, setclient] = useState(initialClient);
-  const initialProducer = productores.find((x) => x.id == order.idProductor);
+  const initialProducer = {
+    id: -1,
+    nombre: "",
+    dni: "",
+    telefono: -1,
+  };
   const [producer, setproducer] = useState(initialProducer);
   const initialDetails = detallesproducto.filter(
-    (x) => x.idPedido == order.idPedido
+    (x) => x.pedido_id == order.idPedido
   );
   const [details, setdetails] = useState(initialDetails);
   const [showOptionsModal, setShowOptionsModal] = useState(false);
@@ -44,11 +94,11 @@ export default function ShowOrder({ route, navigation }) {
   const [amount, setamount] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
   const data = [
-      {id:'1',value:'anulado'},
-      {id:'2',value:'cancelado'},
+    { id: "1", value: "anulado" },
+    { id: "2", value: "cancelado" },
   ];
 
-  const updateOrder = () => {
+  const updateOrder = async () => {
     let valid = true;
     if (!order.direccionEntrega) valid = false;
     if (!order.fechaEntrega) valid = false;
@@ -59,11 +109,42 @@ export default function ShowOrder({ route, navigation }) {
 
     if (!valid) {
       alert("Complete correctamente los campos.");
-      return
+      return;
     }
 
-    // llamada al servicio de update order
+    let updatedOrder = {
+      direccionEntrega: order.direccionEntrega,
+      fechaEntrega: new Date(order.direccionEntrega),
+      estado: "pendiente",
+      montoTotal: amount,
+      anticipo: amount / 2,
+      delivery: order.delivery,
+      productor_id: producer.id,
+      cliente_id: client.id,
+    };
+
+    let result = await AppService.updatePedido(order.idPedido, updatedOrder)
+      .then((response) => response)
+      .catch((err) => err);
+    console.log("ok: ", result);
+
+    let newdetails = details.filter((x) => x.idDetalleDeProducto == -1);
+    newdetails = newdetails.map((x) => {
+      return {
+        cantidad: x.cantidad,
+        color: x.color,
+        producto_id: x.producto_id,
+        pedido_id: order.idPedido,
+      };
+    });
+
+    result = await AppService.addDetallesProductos(newdetails)
+      .then((response) => response)
+      .catch((err) => err);
+
+    console.log("ok: ", result);
     navigation.navigate("HomeScreen");
+
     return;
   };
 
@@ -72,7 +153,7 @@ export default function ShowOrder({ route, navigation }) {
     setclient(initialClient);
     setproducer(initialProducer);
     setdetails(initialDetails);
-  }
+  };
 
   const productItemModalHandler = (product) => {
     setSelectedProductItem(product);
@@ -264,12 +345,13 @@ export default function ShowOrder({ route, navigation }) {
               ></ButtonP>
             </View>
             <View style={{ paddingBottom: 10 }}>
-              <ButtonP
-                title="Generar PDF"
-                width={300}
-                backgroundColor="#F9C3C3"
-                onPress={() => {}}
-              ></ButtonP>
+              <Voucher
+                pedido_id={order.idPedido}
+                clientFullName={`${client.nombre} ${client.apellido}`}
+                direccion={order.direccionEntrega}
+                anticipo={order.anticipo}
+                montoTotal={order.montoTotal}
+              ></Voucher>
             </View>
             <View style={{ paddingBottom: 10 }}>
               <ButtonP
@@ -286,7 +368,9 @@ export default function ShowOrder({ route, navigation }) {
                 title="Dar de baja"
                 width={300}
                 backgroundColor="#F9C3C3"
-                onPress={() => {setshowCancelModal(true)}}
+                onPress={() => {
+                  setshowCancelModal(true);
+                }}
               ></ButtonP>
             </View>
             <View style={{ paddingBottom: 10 }}>
@@ -332,9 +416,9 @@ export default function ShowOrder({ route, navigation }) {
           title={`Dar de Baja el pedido #${order.id}`}
           showFooter={true}
           showButtonClose={false}
-          enableConfirmButton={selectedStatus ? true :  false}
+          enableConfirmButton={selectedStatus ? true : false}
           onConfirm={() => {
-            setorder({ ...order, estado: selectedStatus});
+            setorder({ ...order, estado: selectedStatus });
             updateOrder();
             setshowCancelModal(false);
           }}
