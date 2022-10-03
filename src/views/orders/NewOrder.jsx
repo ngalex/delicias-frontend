@@ -343,8 +343,7 @@ export default function NuevoPedido({ navigation }) {
           onConfirm={setNewOrEditedProduct}
           showModal={showModal}
           setShowModal={setShowModal}
-          data={selectedProductItem}
-        />
+          data={selectedProductItem}/>
         <CommonItemsProduct
           items={detailProducts}
           setData={setDetailProducts}
@@ -385,16 +384,16 @@ export default function NuevoPedido({ navigation }) {
             title="Confirmar"
             backgroundColor="#AEC8F1"
             width="45%"
-            onPress={async () => {
-              await recordOrder();
-              // navigation.navigate("HomeScreen");
-            }}
+            onPress={() => { registerOrder(); navigation.navigate("HomeScreen");}}
           ></ButtonP>
         </View>
       </View>
     );
   };
 
+  const registerOrder = () => {
+    console.log(order);
+  }
   //#region Modal de Producto
 
   const productItemModalHandler = (product) => {

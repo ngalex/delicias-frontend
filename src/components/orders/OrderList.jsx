@@ -1,8 +1,10 @@
 import { StyleSheet, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Card from '../common/Card';
+import { getPedidos, getProductos } from './../../services/service';
 
 export default function OrderList({ displayMode, modalHandler, selectionHandler }) {
+
   const [dataCard, setDataCard] = useState([
     {
       topCol1: "Lorena Diaz",
@@ -26,6 +28,27 @@ export default function OrderList({ displayMode, modalHandler, selectionHandler 
       botCol1: "PENDIENTE",
     },
   ]);
+  
+  useEffect(() => {
+    //getPedidos().then(mapGetOrders.bind(this));
+  }, []);
+  
+  
+  const mapGetOrders = (response) => {
+    console.log(response);
+    const newDataCard = [];
+    response.forEach(order => {
+      newDataCard.push({
+        key: order.id,
+        topCol1: `${order.clientName} ${order.clientLastName}`,
+        midCol1: order.fechaEntrega,
+        midCol2: null,
+        botCol1: order.estado
+      })
+    });
+
+    setDataCard(newDataCard);
+  }
 
   return (
     <View style={styles.container}>
