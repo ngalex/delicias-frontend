@@ -10,18 +10,12 @@ const Stack = createStackNavigator();
 
 function MainNavigator() {
     return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="HomeScreen">
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="HomeScreen"
-            component={Home}
-          />
-          <Stack.Screen name="PedidosScreen" component={Pedidos} />
-          <Stack.Screen name="NuevoPedidoScreen" component={NuevoPedido} />
-          <Stack.Screen name="PedidoScreen" component={ShowOrder} initialParams={{order: {idpedido:0}}}/>
-        </Stack.Navigator>
-      </NavigationContainer>
+            <Stack.Navigator initialRouteName="HomeScreen">
+                <Stack.Screen options={{ headerShown: false} } name="HomeScreen" component={Home}/>
+                <Stack.Screen name="PedidosScreen" component={Pedidos}/>
+                <Stack.Screen  name="NuevoPedidoScreen" component={NuevoPedido}/>
+                <Stack.Screen name="PedidoScreen" component={ShowOrder} initialParams={{order: {idpedido:0}}}/>
+            </Stack.Navigator>
     );
 }
 
