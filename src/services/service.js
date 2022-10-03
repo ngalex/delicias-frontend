@@ -151,7 +151,7 @@ export const getDetalleProdcutoByPedidoId = async (pedido_id) => {
   if (error) throw error;
   return data;
 };
-const addDetallesProductos = async (detalles) => {
+export const addDetallesProductos = async (detalles) => {
   const { error, data } = await supabase
     .from("detalle_producto")
     .insert(detalles);

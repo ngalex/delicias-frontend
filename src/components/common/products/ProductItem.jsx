@@ -16,8 +16,8 @@ export default function ProductItem({onClick, data}) {
     CommonItemsProductStyles.itemBgOrange
   ];
 
-  const getIconProduct = (idProduct) => {
-    switch (idProduct) {
+  const getIconProduct = (producto_id) => {
+    switch (producto_id) {
       case 1:
         return <IconFont5 name='apple-alt' size={30} color="#707070"/>
       case 2:
@@ -25,22 +25,20 @@ export default function ProductItem({onClick, data}) {
       case 3:
         return <IconMCI name='tree' size={30} color="#707070"/>
       default:
-        console.log(`Error. Id incorrecto ${idProduct}`);
+        console.log(`Error. Id incorrecto ${producto_id}`);
         break;
     }
   }
   return (
     <Pressable
-    onPress={() => onClick(data.idDetalleDeProduto)}
-    key={data.idDetalleDeProduto}
-    style={[CommonItemsProductStyles.itemContainer, bgList[data.idColor]]}
+      onPress={() => onClick(data.idDetalleDeProduto)}
+      key={data.idDetalleDeProduto}
+      style={[CommonItemsProductStyles.itemContainer, bgList[data.idColor]]}
     >
-      <Text style={CommonItemsProductStyles.itemCount}>
-        {data.cantidad}
-      </Text>
-      {getIconProduct(data.idProducto)}
+      <Text style={CommonItemsProductStyles.itemCount}>{data.cantidad}</Text>
+      {getIconProduct(data.producto_id)}
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({})

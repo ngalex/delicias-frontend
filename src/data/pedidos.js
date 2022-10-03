@@ -7,8 +7,8 @@ export const pedidos = [
         montoTotal: 5440.00,
         anticipo: 2720.00,
         delivery: true,
-        idProductor: 3,
-        idCliente: 2
+        productor_id: 3,
+        cliente_id: 2
     },
     {
         idPedido: 176,
@@ -18,8 +18,8 @@ export const pedidos = [
         montoTotal: 2000.00,
         anticipo: 1000.00,
         delivery: true,
-        idProductor: 2,
-        idCliente: 1
+        productor_id: 2,
+        cliente_id: 1
     },
     {
         idPedido: 10,
@@ -29,7 +29,7 @@ export const pedidos = [
         montoTotal: 5000.00,
         anticipo: 2500.00,
         delivery: true,
-        idProductor: 3,
-        idCliente: 3
+        productor_id: 3,
+        cliente_id: 3
     }
 ]
