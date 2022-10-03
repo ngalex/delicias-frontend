@@ -9,7 +9,7 @@ import React, { useState, useEffect } from "react";
 import CommonInput from "../../components/common/Input/input.common";
 import { NewOrderStyles } from "./NewOrder.styles";
 import { ButtonP } from "../../components/common/buttons/ButtonP";
-import productores from "../../data/productores";
+import {productores} from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import { clientes } from "../../data/clientes";
 import ProductItemModal from "../../components/common/modals/ProductItemModal";
@@ -310,6 +310,7 @@ export default function NuevoPedido({ navigation }) {
         <CommonItemsProduct
           items={detailProducts}
           setData={setDetailProducts}
+          editable = {true}
           onChangeDetails={(details) => {
             handleUpdateDetails(details);
           }}

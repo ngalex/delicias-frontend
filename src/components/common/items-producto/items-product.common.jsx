@@ -10,9 +10,10 @@ import Icon from "react-native-vector-icons/FontAwesome5";
  * prop.onChangeDetails es un handle que escucha cambios en el listado de detalle producto y retorna al componente parent.
  * @returns
  */
-const CommonItemsProduct = (props) => {
-  const [items, setitems] = useState(
-    !Array.isArray(props.items)? [] : props.items
+export default function CommonItemsProduct(props) {
+  const { items, editable } = props;
+  const [detailList, setdetails] = useState(
+    !items || !Array.isArray(items) ? [] : items
     // [
     //   {
     //     idDetalleDeProduto: 1,
@@ -71,22 +72,6 @@ const CommonItemsProduct = (props) => {
     //   },
     // ]
   );
-  let counter = 0;
-
-  const bgList = [
-    CommonItemsProductStyles.itemBgRed,
-    CommonItemsProductStyles.itemBgBlue,
-    CommonItemsProductStyles.itemBgYellow,
-    CommonItemsProductStyles.itemBgGreen,
-  ];
-
-  const nextStyle = () => {
-    counter++;
-    if (counter >= bgList.length) {
-      counter = 0;
-    }
-    return counter;
-  };
 
   const onAddButton = () => {
     // ToDO: llamar modal, recuperar Detalle de Producto.
@@ -111,7 +96,7 @@ const CommonItemsProduct = (props) => {
 
   const addDetail = (detail) => {
     if (!detail) return;
-    let details = [...items];
+    let details = [...detailList];
 
     let item = details.find(
       (item) => item.producto.IDProducto == detail.producto.IDProducto
@@ -132,10 +117,10 @@ const CommonItemsProduct = (props) => {
 
   const removeDetail = (IDProducto) => {
     if (!IDProducto) return;
-    let details = items.filter(
+    let details = detailList.filter(
       (item) => item.producto.IDProducto != IDProducto
     );
-    setitems(details);
+    setdetails(details);
     props.onChangeDetails(details);
   };
 
@@ -143,7 +128,7 @@ const CommonItemsProduct = (props) => {
     if (props.items.length > 0) {
       return props.items.map((value, index) => (
         <ProductItem
-        key={value.idDetalleDeProduto}
+          key={value.idDetalleDeProduto}
           onClick={() => props.productItemModalHandler(value)}
           data={value}
         />
@@ -154,14 +139,14 @@ const CommonItemsProduct = (props) => {
   return (
     <View style={CommonItemsProductStyles.container}>
       {showItems()}
-      <Pressable
-        style={CommonItemsProductStyles.itemContainer}
-        onPress={() => onAddButton()}
-      >
-        <Icon name='plus' size={40} color="#8E8E8E" style={{}}/>
-      </Pressable>
+      {editable ? (
+        <Pressable
+          style={CommonItemsProductStyles.itemContainer}
+          onPress={() => onAddButton()}
+        >
+          <Icon name="plus" size={40} color="#8E8E8E" style={{}} />
+        </Pressable>
+      ) : null}
     </View>
   );
-};
-
-export default CommonItemsProduct;
+}

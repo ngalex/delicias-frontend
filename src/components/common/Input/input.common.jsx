@@ -1,13 +1,11 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Modal,
   Text,
   TextInput,
   View,
-  Pressable,
-  Picker,
-  Button,
+  Pressable
 } from "react-native";
 import { inputCommonStyles } from "./input.common.styles";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -73,12 +71,13 @@ export default function CommonInput(prop) {
           setValue={setinputValue}
           setOpen={setOpen}
           setItems={setItems}
+          disabled={editable}
           placeholder={placeholder}
-          listMode='SCROLLVIEW'
+          listMode="SCROLLVIEW"
           onSelectItem={(text) => prop.onChangeInput(text)}
-          selectedItemLabelStyle={{color: '#8E8E8E'}}
-          listItemLabelStyle={{color: '#A2A2A2'}}
-          textStyle={{fontSize: 16, color: "#8E8E8E", fontWeight: "500"}}
+          selectedItemLabelStyle={{ color: "#8E8E8E" }}
+          listItemLabelStyle={{ color: "#A2A2A2" }}
+          textStyle={{ fontSize: 16, color: "#8E8E8E", fontWeight: "500" }}
           dropDownContainerStyle={{
             backgroundColor: "white",
             zIndex: 1000,
@@ -87,7 +86,7 @@ export default function CommonInput(prop) {
             ...inputCommonStyles.input,
           }}
           style={{
-            ...inputCommonStyles.comboStyle
+            ...inputCommonStyles.comboStyle,
           }}
         />
       </View>

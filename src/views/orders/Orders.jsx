@@ -5,7 +5,7 @@ import CustomModal from './../../components/common/modals/CustomModal';
 import SelectList from 'react-native-dropdown-select-list'
 import { ButtonP } from './../../components/common/buttons/ButtonP';
 
-export default function Pedidos() {
+export default function Pedidos({navigation}) {
   const data = [
       {id:'1',value:'Activo'},
       {id:'2',value:'Pendiente'},
@@ -22,6 +22,11 @@ export default function Pedidos() {
     setEnableConfirmButtonModal(false);
     setShowModal(!showModal);
   }
+
+  const showOrder = (idpedido) => {
+    setSelectedOrder(idpedido);
+    navigation.navigate("PedidoScreen",{ idpedido: idpedido });
+  }
   
   const changeOrderStatus = () => {
     console.log(`Cambia el estado del pedido con id ${selectedOrder} a estado ${selectedStatus} `);
@@ -32,34 +37,58 @@ export default function Pedidos() {
 
   return (
     <View style={styles.container}>
-      <OrderList displayMode={'orderMode'} modalHandler={modalHandler}/>
-      <CustomModal 
-        visible={showModal} 
-        setShowModal={setShowModal} 
-        title={'Cambiar estado del pedido'}
+      <OrderList
+        displayMode={"orderMode"}
+        modalHandler={modalHandler}
+        selectionHandler={showOrder}/>
+      <CustomModal
+        visible={showModal}
+        setShowModal={setShowModal}
+        title={"Cambiar estado del pedido"}
         showFooter={true}
         showButtonClose={false}
         enableConfirmButton={enableConfirmButtonModal}
         onConfirm={changeOrderStatus}
-        >
+      >
         <View style={[modalStyles.customContentContainer]}>
           <View style={[modalStyles.toggle]}>
             <SelectList
-              search = {false}
-              placeholder={'Selecciona un estado'}
+              search={false}
+              placeholder={"Selecciona un estado"}
               setSelected={setSelectedStatus}
               data={data}
-              dropdownStyles={{shadowColor: "#000", elevation: 24, borderWidth: 0, zIndex: 200, backgroundColor: '#FAFAFA'}}
-              inputStyles={{color: '#8E8E8E', fontSize: 18, fontWeight: '500'}}
-              dropdownTextStyles={{color: '#8E8E8E', fontSize: 18, fontWeight: '500'}}
-              boxStyles={{borderWidth: 0, backgroundColor: '#FAFAFA', shadowColor: "#333", elevation: 4, }}
-              onSelect={() => {setEnableConfirmButtonModal(true)}}
+              dropdownStyles={{
+                shadowColor: "#000",
+                elevation: 24,
+                borderWidth: 0,
+                zIndex: 200,
+                backgroundColor: "#FAFAFA",
+              }}
+              inputStyles={{
+                color: "#8E8E8E",
+                fontSize: 18,
+                fontWeight: "500",
+              }}
+              dropdownTextStyles={{
+                color: "#8E8E8E",
+                fontSize: 18,
+                fontWeight: "500",
+              }}
+              boxStyles={{
+                borderWidth: 0,
+                backgroundColor: "#FAFAFA",
+                shadowColor: "#333",
+                elevation: 4,
+              }}
+              onSelect={() => {
+                setEnableConfirmButtonModal(true);
+              }}
             />
           </View>
         </View>
       </CustomModal>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
