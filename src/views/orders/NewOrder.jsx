@@ -13,7 +13,7 @@ import {productores} from "../../data/productores";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import { clientes } from "../../data/clientes";
 import ProductItemModal from "../../components/common/modals/ProductItemModal";
-
+import { productos } from "../../data/productos";
 //BUG: cuando se pre cargan los datos del cliente con el bton BUSCAR CLIENTE, los valores de 'participaSorteo' y 'participaPromocion' tambien 
 //son cargados en el objeto 'client' pero no se actualiza el valor de los switchs. Por lo que si alguno viene en true, el switch va a seguir viendose apagado
 //se arregla con useEffects
@@ -22,10 +22,14 @@ export default function NuevoPedido({ navigation }) {
 
   useEffect(() => {
     let newAmount = detailProducts.reduce((partialSum, dp) => {
-      const price = products.find( p => p.id === dp.idProducto).precio
+      const price = productos.find( p => p.id === dp.idProducto).precio
       return partialSum + price * dp.cantidad
     }, 0);
-    setamount(newAmount)
+    setamount(newAmount);
+    if (client != clientInitialState) {
+      setIsEnabledSorteo(client.participaSorteo);
+      setIsEnabledOffer(client.participaPromocion);
+    }
   })
   
   const [last, setlast] = useState(false);
@@ -68,16 +72,9 @@ export default function NuevoPedido({ navigation }) {
 
   const [detailProducts, setDetailProducts] = useState([])
 
-  const products = [
-    {id: 1, name:'Manzanas', precio: 90},
-    {id: 2,name:'Pochoclos', precio: 50},
-    {id:3, name:'Copos de Azucar', precio: 80}
-  ];
-
   //UseStates para Modal
   const [showModal, setShowModal] = useState(false)
   const [selectedProductItem, setSelectedProductItem] = useState()
-  //
 
   const loadClientForm = (clientData) => {
     return (
@@ -225,6 +222,7 @@ export default function NuevoPedido({ navigation }) {
             <CommonInput
               label="Productor"
               type="combo"
+              placeholder={"Seleccione..."}
               value={
                 producer
                   ? { label: producer.nombre, value: producer.id }

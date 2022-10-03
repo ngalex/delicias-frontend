@@ -106,9 +106,9 @@ export default function CommonInput(prop) {
           {label}
         </Text>
         <Switch
-          value={isEnabled}
-          onValueChange={(val) => {setIsEnabled(val); prop.onChangeInput(val)}}
-          disabled={false}
+          value={value}
+          onValueChange={(val) => {setinputValue(val); prop.onChangeInput(val)}}
+          disabled={isEnabled}
           activeText={'SI '}
           inActiveText={' NO'}
           backgroundActive={'#D4E3FB'}
