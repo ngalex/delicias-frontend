@@ -11,7 +11,7 @@ export const CommonItemsProductStyles = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "red", 
+        backgroundColor: "white", 
         width: 70, 
         height: 100,
         borderRadius: 24,
@@ -28,17 +28,22 @@ export const CommonItemsProductStyles = StyleSheet.create({
         textAlign: "center",
         textAlignVertical: "center",
     },
-    itemBgRed: {
-        backgroundColor: "#FCE5E5"
+    itemBgPink: {
+        backgroundColor: '#ffd5ea'
     },
     itemBgBlue: {
-        backgroundColor: "#BFEEFF"
-    }, 
+        backgroundColor: '#ceefff'
+    },
     itemBgYellow: {
         backgroundColor: "#FAFFD6"
     },
     itemBgGreen: {
-        backgroundColor: "#DAFFCC"
+        backgroundColor: '#d0f5cb'
+    },
+    itemBgOrange: {
+        backgroundColor: '#fee6b8'
+    },
+    itemBgWhite: {
+        backgroundColor: 'white'
     }
-
 });
