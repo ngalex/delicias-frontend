@@ -1,5 +1,5 @@
-import {React, useState} from "react";
-import { View, Text } from "react-native";
+import { React, useState } from "react";
+import { View, Text, FlatList } from "react-native";
 import { pedidos } from "../../data/pedidos";
 import CommonInput from "../../components/common/Input/input.common";
 import { clientes } from "../../data/clientes";
@@ -8,17 +8,55 @@ import { detallesproducto } from "../../data/detalle-producto";
 import { getFormatedDate } from "react-native-modern-datepicker";
 import { ShowOrderStyles } from "./ShowOrder.styles";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
+import CustomModal from "../../components/common/modals/CustomModal";
+import { ButtonP } from "../../components/common/buttons/ButtonP";
+import SelectList from "react-native-dropdown-select-list";
+import { ScrollView } from "react-native";
 
 export default function ShowOrder({ route, navigation }) {
-    const { idpedido, editable } = route.params;
-    navigation.setOptions({ title: `Pedido #${idpedido}` });
-    const order = pedidos.find(x => x.idPedido == idpedido);
-    const client = clientes.find(x => x.id == order.idCliente);
-    const producer = productores.find((x) => x.id == order.idProductor);
-    const details = detallesproducto.filter(x => x.idPedido == order.idPedido)
-    const [isEditable, setisEditable] = useState(editable);
+  const { idpedido, editable } = route.params;
+  const [isEditable, setisEditable] = useState(editable ? true : false);
+  navigation.setOptions({ title: `Pedido #${idpedido}` });
+  const [order, setorder] = useState(
+    pedidos.find((x) => x.idPedido == idpedido)
+  );
+  const [client, setclient] = useState(
+    clientes.find((x) => x.id == order.idCliente)
+  );
+  const [producer, setproducer] = useState(
+    productores.find((x) => x.id == order.idProductor)
+  );
+  const [details, setdetails] = useState(
+    detallesproducto.filter((x) => x.idPedido == order.idPedido)
+  );
+  const [showModal, setShowModal] = useState(false);
+  const [enableConfirmButtonModal, setEnableConfirmButtonModal] =
+    useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
 
-    return (
+  const updateDetails = (items) => {
+    if (!items) return;
+    console.log(items);
+    let montoFinal = 0;
+
+    items.map((x) => (montoFinal += x.cantidad * x.producto.precio));
+    setorder({ ...order, montoTotal: montoFinal, anticipo: montoFinal / 2 });
+  };
+
+  const updateOrder = () => {
+    return;
+  };
+
+  return (
+    <ScrollView>
+      <ButtonP
+        title="Opciones"
+        width={90}
+        backgroundColor="#F9C3C3"
+        onPress={() => {
+          setShowModal(true);
+        }}
+      ></ButtonP>
       <View style={ShowOrderStyles.container}>
         <View style={{ marginBottom: 15 }}>
           <CommonInput
@@ -26,7 +64,7 @@ export default function ShowOrder({ route, navigation }) {
             label="Cliente"
             value={`${client.nombre} ${client.apellido}`}
             placeholder={"Escriba..."}
-            onChangeInput={(text) => text}
+            onChangeInput={(val) => {}}
             editable={false}
           ></CommonInput>
         </View>
@@ -36,8 +74,10 @@ export default function ShowOrder({ route, navigation }) {
             label="Direccion"
             value={client.direccion}
             placeholder={"Escriba..."}
-            onChangeInput={(text) => text}
-            editable={false}
+            onChangeInput={(val) =>
+              setorder({ ...order, direccionEntrega: val })
+            }
+            editable={isEditable}
           ></CommonInput>
         </View>
         <View style={{ marginBottom: 15 }}>
@@ -46,8 +86,8 @@ export default function ShowOrder({ route, navigation }) {
             label="Fecha de entrega"
             value={getFormatedDate(order.fechaEntrega, "YYYY/MM/DD HH:mm")}
             placeholder={"Escriba..."}
-            onChangeInput={(text) => text}
-            editable={false}
+            onChangeInput={(val) => setorder({ ...order, fechaEntrega: val })}
+            editable={isEditable}
           ></CommonInput>
         </View>
         <View style={ShowOrderStyles.row}>
@@ -55,19 +95,22 @@ export default function ShowOrder({ route, navigation }) {
             <CommonInput
               type="combo"
               label="Productor asignado"
-              placeholder={"Escriba..."}
-              editable={false}
+              placeholder={producer.nombre}
+              editable={!isEditable}
               value={{ label: producer.nombre, value: producer.id }}
               items={productores.map((x) => {
                 return { label: x.nombre, value: x.id };
               })}
-              onChangeInput={(text) => text}
+              onChangeInput={(val) =>
+                setproducer(productores.find((x) => x.id == val.value))
+              }
             ></CommonInput>
           </View>
           <View style={{ flexBasis: "30%" }}>
             <CommonInput
               label="Delivery"
               type="combo"
+              placeholder={order.delivery ? "Si" : "No"}
               items={[
                 { label: "Si", value: true },
                 { label: "No", value: false },
@@ -77,17 +120,19 @@ export default function ShowOrder({ route, navigation }) {
                   ? { label: "Si", value: true }
                   : { label: "No", value: false }
               }
-              onChangeInput={(text) => text}
+              editable={!isEditable}
+              onChangeInput={(val) =>
+                setorder({ ...order, delivery: val.value })
+              }
             ></CommonInput>
           </View>
         </View>
         <Text style={ShowOrderStyles.subtitle}>Productos</Text>
 
         <CommonItemsProduct
+          editable={isEditable}
           items={details}
-          onChangeDetails={(details) => {
-            console.log(details);
-          }}
+          onChangeDetails={(details) => updateDetails(details)}
         ></CommonItemsProduct>
 
         <Text style={ShowOrderStyles.subtitle}>Pago</Text>
@@ -101,6 +146,83 @@ export default function ShowOrder({ route, navigation }) {
             <Text style={ShowOrderStyles.currency}>$ {order.montoTotal}</Text>
           </View>
         </View>
+
+        {isEditable ? (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingBottom: 10,
+            }}
+          >
+            <ButtonP
+              title="Cancelar"
+              width="45%"
+              backgroundColor="#E3E3E3"
+              onPress={() => {
+                setisEditable(false);
+              }}
+            ></ButtonP>
+            <ButtonP
+              title="Confirmar"
+              width="45%"
+              backgroundColor="#AEC8F1"
+              onPress={() => {
+                setisEditable(false);
+                updateOrder();
+              }}
+            ></ButtonP>
+          </View>
+        ) : null}
+
+        <CustomModal
+          visible={showModal}
+          setShowModal={setShowModal}
+          title={"Cambiar estado del pedido"}
+          showFooter={false}
+          showButtonClose={false}
+          enableConfirmButton={false}
+          onConfirm={() => {}}
+        >
+          <View style={[ShowOrderStyles.customContentContainer]}>
+            <View style={{ paddingBottom: 10 }}>
+              <ButtonP
+                title="Editar"
+                width={300}
+                backgroundColor="#F9C3C3"
+                onPress={() => {
+                  setisEditable(true);
+                  setShowModal(false);
+                }}
+              ></ButtonP>
+            </View>
+            <View style={{ paddingBottom: 10 }}>
+              <ButtonP
+                title="Generar PDF"
+                width={300}
+                backgroundColor="#F9C3C3"
+                onPress={() => {}}
+              ></ButtonP>
+            </View>
+            <View style={{ paddingBottom: 10 }}>
+              <ButtonP
+                title="Finalizar"
+                width={300}
+                backgroundColor="#F9C3C3"
+                onPress={() => {}}
+              ></ButtonP>
+            </View>
+            <View style={{ paddingBottom: 10 }}>
+              <ButtonP
+                title="Dar de baja"
+                width={300}
+                backgroundColor="#F9C3C3"
+                onPress={() => {}}
+              ></ButtonP>
+            </View>
+          </View>
+        </CustomModal>
       </View>
-    );
+    </ScrollView>
+  );
 }

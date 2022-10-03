@@ -35,5 +35,24 @@ export const ShowOrderStyles = StyleSheet.create({
     currency: {
         fontSize: 32,
         color: "#8E8E8E"
-    }
+    },
+
+    modal_backdrop: {
+        backgroundColor: '#000',
+        zIndex: -1,
+        position: 'absolute',
+        height: '100%',
+        width: '100%',
+        opacity: 0.2
+    },
+    modal_customContentContainer: {
+        width: '100%',
+        paddingVertical: 50
+    },
+    modal_toggle: {
+        position: 'absolute',
+        zIndex: 200,
+        top: 25,
+        width: '100%',
+    },
 });

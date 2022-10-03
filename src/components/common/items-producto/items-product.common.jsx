@@ -71,7 +71,6 @@ export default function CommonItemsProduct(props) {
     //   },
     // ]
   );
-  const [isEditable, setisEditable] = useState(editable ? editable : false);
   let counter = 0;
 
   const bgList = [
@@ -158,19 +157,23 @@ export default function CommonItemsProduct(props) {
     }
   };
 
-  return (
-    <View style={CommonItemsProductStyles.container}>
-      {isEditable ? (
+  const isEnabledEditable = () => {
+    if (editable) {
+      return (
         <Pressable
           style={{ width: 80, height: 100 }}
           onPress={() => onAddButton()}
         >
           <OptionGrid item="+"></OptionGrid>
         </Pressable>
-      ) : (
-        <View></View>
-      )}
+      );
+    }
+    return null;
+  };
 
+  return (
+    <View style={CommonItemsProductStyles.container}>
+      {isEnabledEditable()}
       {showItems()}
     </View>
   );

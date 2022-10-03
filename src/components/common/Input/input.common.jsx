@@ -14,7 +14,7 @@ import { Switch } from 'react-native-switch';
 
 export default function CommonInput(prop) {
   const { value, editable, label, type, items, placeholder } = prop;
-  const [inputValue, setinputValue] = useState(null);
+  const [inputValue, setinputValue] = useState(value);
   const [inputItems, setItems] = useState(
     !Array.isArray(prop.items) || !prop.items.length
       ? [{ label: "Ninguno", value: null }]
@@ -65,18 +65,18 @@ export default function CommonInput(prop) {
         <DropDownPicker
           key={value ? value.label : 0}
           open={open}
-          value={inputValue}
+          value={value}
           items={items}
           setValue={setinputValue}
           setOpen={setOpen}
           setItems={setItems}
-          disabled = {editable}
+          disabled={editable}
           placeholder={placeholder}
-          listMode='SCROLLVIEW'
+          listMode="SCROLLVIEW"
           onSelectItem={(text) => prop.onChangeInput(text)}
-          selectedItemLabelStyle={{color: '#8E8E8E'}}
-          listItemLabelStyle={{color: '#A2A2A2'}}
-          textStyle={{fontSize: 16, color: "#8E8E8E", fontWeight: "500"}}
+          selectedItemLabelStyle={{ color: "#8E8E8E" }}
+          listItemLabelStyle={{ color: "#A2A2A2" }}
+          textStyle={{ fontSize: 16, color: "#8E8E8E", fontWeight: "500" }}
           dropDownContainerStyle={{
             backgroundColor: "white",
             zIndex: 1000,
@@ -85,7 +85,7 @@ export default function CommonInput(prop) {
             ...inputCommonStyles.input,
           }}
           style={{
-            ...inputCommonStyles.comboStyle
+            ...inputCommonStyles.comboStyle,
           }}
         />
       </View>
