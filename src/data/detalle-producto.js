@@ -2,37 +2,22 @@ export const detallesproducto = [
     {
         idDetallePedido: 1,
         idPedido: 200,
-        producto: {
-            id: 1,
-            nombre: "Pochoclo",
-            precio: 100,
-            estado: "habilitado"
-        },
+        idProducto: 1,
         cantidad: 5,
-        color: "green"
+        color: "Celeste"
     },
     {
         idDetallePedido: 2,
         idPedido: 200,
-        producto: {
-            id: 2,
-            nombre: "Manzana Caramelada",
-            precio: 200,
-            estado: "habilitado"
-        },
+        idProducto:  2,
         cantidad: 3,
-        color: "red"
+        color: "Verde"
     },
     {
         idDetallePedido: 1,
         idPedido: 10,
-        producto: {
-            id: 2,
-            nombre: "Manzana Caramelada",
-            precio: 200,
-            estado: "habilitado"
-        },
+        idProducto: 2,
         cantidad: 2,
-        color: "blue"
+        color: "Amarillo"
     },
 ]

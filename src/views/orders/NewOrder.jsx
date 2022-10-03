@@ -310,6 +310,7 @@ export default function NuevoPedido({ navigation }) {
         <CommonItemsProduct
           items={detailProducts}
           setData={setDetailProducts}
+          editable = {true}
           onChangeDetails={(details) => {
             handleUpdateDetails(details);
           }}

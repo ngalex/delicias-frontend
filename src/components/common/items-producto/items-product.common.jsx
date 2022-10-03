@@ -72,22 +72,6 @@ export default function CommonItemsProduct(props) {
     //   },
     // ]
   );
-  let counter = 0;
-
-  const bgList = [
-    CommonItemsProductStyles.itemBgRed,
-    CommonItemsProductStyles.itemBgBlue,
-    CommonItemsProductStyles.itemBgYellow,
-    CommonItemsProductStyles.itemBgGreen,
-  ];
-
-  const nextStyle = () => {
-    counter++;
-    if (counter >= bgList.length) {
-      counter = 0;
-    }
-    return counter;
-  };
 
   const onAddButton = () => {
     // ToDO: llamar modal, recuperar Detalle de Producto.
@@ -144,7 +128,7 @@ export default function CommonItemsProduct(props) {
     if (props.items.length > 0) {
       return props.items.map((value, index) => (
         <ProductItem
-        key={value.idDetalleDeProduto}
+          key={value.idDetalleDeProduto}
           onClick={() => props.productItemModalHandler(value)}
           data={value}
         />
@@ -155,12 +139,14 @@ export default function CommonItemsProduct(props) {
   return (
     <View style={CommonItemsProductStyles.container}>
       {showItems()}
-      <Pressable
-        style={CommonItemsProductStyles.itemContainer}
-        onPress={() => onAddButton()}
-      >
-        <Icon name='plus' size={40} color="#8E8E8E" style={{}}/>
-      </Pressable>
+      {editable ? (
+        <Pressable
+          style={CommonItemsProductStyles.itemContainer}
+          onPress={() => onAddButton()}
+        >
+          <Icon name="plus" size={40} color="#8E8E8E" style={{}} />
+        </Pressable>
+      ) : null}
     </View>
   );
 }

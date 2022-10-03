@@ -1,5 +1,5 @@
-import { React, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import { React, useState, useEffect } from "react";
+import { View, Text } from "react-native";
 import { pedidos } from "../../data/pedidos";
 import CommonInput from "../../components/common/Input/input.common";
 import { clientes } from "../../data/clientes";
@@ -10,10 +10,18 @@ import { ShowOrderStyles } from "./ShowOrder.styles";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import CustomModal from "../../components/common/modals/CustomModal";
 import { ButtonP } from "../../components/common/buttons/ButtonP";
-import SelectList from "react-native-dropdown-select-list";
 import { ScrollView } from "react-native";
+import ProductItemModal from "../../components/common/modals/ProductItemModal";
+import { productos } from "../../data/productos";
 
 export default function ShowOrder({ route, navigation }) {
+  useEffect(() => {
+    let newAmount = details.reduce((partialSum, dp) => {
+      const price = productos.find((p) => p.id === dp.idProducto).precio;
+      return partialSum + price * dp.cantidad;
+    }, 0);
+    setamount(newAmount);
+  });
   const { idpedido, editable } = route.params;
   const [isEditable, setisEditable] = useState(editable ? true : false);
   navigation.setOptions({ title: `Pedido #${idpedido}` });
@@ -27,22 +35,63 @@ export default function ShowOrder({ route, navigation }) {
     (x) => x.idPedido == order.idPedido
   );
   const [details, setdetails] = useState(initialDetails);
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [enableConfirmButtonModal, setEnableConfirmButtonModal] =
-    useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("");
-
-  const updateDetails = (items) => {
-    if (!items) return;
-    console.log(items);
-    let montoFinal = 0;
-
-    items.map((x) => (montoFinal += x.cantidad * x.producto.precio));
-    setorder({ ...order, montoTotal: montoFinal, anticipo: montoFinal / 2 });
-  };
+  const [selectedProductItem, setSelectedProductItem] = useState();
+  const [amount, setamount] = useState(0);
 
   const updateOrder = () => {
+    let valid = true;
+    if (!order.direccionEntrega) valid = false;
+    if (!order.fechaEntrega) valid = false;
+    if (!producer) valid = false;
+    if (order.delivery == null) valid == false;
+    if (details == null) valid == false;
+    if (detallesproducto.length <= 0) valid = false;
+
+    if (!valid) {
+      alert("Complete correctamente los campos.");
+      return
+    }
+
+    // llamada al servicio de update order
     return;
+  };
+
+  const resetOrder = () => {
+    setorder(initialOrder);
+    setclient(initialClient);
+    setproducer(initialProducer);
+    setdetails(initialDetails);
+  }
+
+  const productItemModalHandler = (product) => {
+    setSelectedProductItem(product);
+    setShowModal(!showModal);
+  };
+
+  const setNewOrEditedProduct = (detail) => {
+    if (detail.idDetalleDeProducto === -1) {
+      detail.idDetalleDeProducto = details.length;
+      setdetails([...details, detail]);
+    } else {
+      const indx = details.findIndex(
+        (prod) => prod.idDetalleDeProducto === detail.idDetalleDeProducto
+      );
+      const detailProductsAux = details;
+      detailProductsAux[indx] = detail;
+      setdetails(detailProductsAux);
+    }
+    setShowModal(!showModal);
+  };
+
+  const handleUpdateDetails = (value) => {
+    setdetails(value);
+    let newAmount = value.reduce(
+      (partialSum, a) => partialSum + a.producto.precio * a.cantidad,
+      0
+    );
+    setamount(newAmount);
   };
 
   return (
@@ -52,7 +101,7 @@ export default function ShowOrder({ route, navigation }) {
         width={90}
         backgroundColor="#F9C3C3"
         onPress={() => {
-          setShowModal(true);
+          setShowOptionsModal(true);
         }}
       ></ButtonP>
       <View style={ShowOrderStyles.container}>
@@ -62,7 +111,7 @@ export default function ShowOrder({ route, navigation }) {
             label="Cliente"
             value={`${client.nombre} ${client.apellido}`}
             placeholder={"Escriba..."}
-            onChangeInput={(val) => {}}
+            onChangeInput={(val) => null}
             editable={false}
           ></CommonInput>
         </View>
@@ -70,7 +119,7 @@ export default function ShowOrder({ route, navigation }) {
           <CommonInput
             type="text"
             label="Direccion"
-            value={client.direccion}
+            value={order.direccionEntrega}
             placeholder={"Escriba..."}
             onChangeInput={(val) =>
               setorder({ ...order, direccionEntrega: val })
@@ -127,21 +176,31 @@ export default function ShowOrder({ route, navigation }) {
         </View>
         <Text style={ShowOrderStyles.subtitle}>Productos</Text>
 
+        <ProductItemModal
+          onConfirm={setNewOrEditedProduct}
+          showModal={showModal}
+          setShowModal={setShowModal}
+          data={selectedProductItem}
+        />
         <CommonItemsProduct
           editable={isEditable}
+          setData={setdetails}
           items={details}
-          onChangeDetails={(details) => updateDetails(details)}
+          onChangeDetails={(details) => {
+            handleUpdateDetails(details);
+          }}
+          productItemModalHandler={productItemModalHandler}
         ></CommonItemsProduct>
 
         <Text style={ShowOrderStyles.subtitle}>Pago</Text>
         <View>
           <View style={ShowOrderStyles.containerCurrency}>
             <Text style={ShowOrderStyles.currencyTitle}>Anticipo</Text>
-            <Text style={ShowOrderStyles.currency}>$ {order.anticipo}</Text>
+            <Text style={ShowOrderStyles.currency}>$ {amount / 2}</Text>
           </View>
           <View style={ShowOrderStyles.containerCurrency}>
             <Text style={ShowOrderStyles.currencyTitle}>Monto Total</Text>
-            <Text style={ShowOrderStyles.currency}>$ {order.montoTotal}</Text>
+            <Text style={ShowOrderStyles.currency}>$ {amount}</Text>
           </View>
         </View>
 
@@ -159,6 +218,7 @@ export default function ShowOrder({ route, navigation }) {
               backgroundColor="#E3E3E3"
               onPress={() => {
                 setisEditable(false);
+                resetOrder();
               }}
             ></ButtonP>
             <ButtonP
@@ -174,8 +234,8 @@ export default function ShowOrder({ route, navigation }) {
         ) : null}
 
         <CustomModal
-          visible={showModal}
-          setShowModal={setShowModal}
+          visible={showOptionsModal}
+          setShowModal={setShowOptionsModal}
           title={"Cambiar estado del pedido"}
           showFooter={false}
           showButtonClose={false}
@@ -190,7 +250,7 @@ export default function ShowOrder({ route, navigation }) {
                 backgroundColor="#F9C3C3"
                 onPress={() => {
                   setisEditable(true);
-                  setShowModal(false);
+                  setShowOptionsModal(false);
                 }}
               ></ButtonP>
             </View>
@@ -216,6 +276,14 @@ export default function ShowOrder({ route, navigation }) {
                 width={300}
                 backgroundColor="#F9C3C3"
                 onPress={() => {}}
+              ></ButtonP>
+            </View>
+            <View style={{ paddingBottom: 10 }}>
+              <ButtonP
+                title="Cancelar"
+                width={300}
+                backgroundColor="#ABABAB"
+                onPress={() => {setShowOptionsModal(false)}}
               ></ButtonP>
             </View>
           </View>
