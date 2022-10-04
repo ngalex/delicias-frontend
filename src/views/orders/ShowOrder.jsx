@@ -16,30 +16,33 @@ import * as AppService from "../../services/service";
 import Voucher from "../../components/common/voucher/voucher.common";
 
 export default function ShowOrder({ route, navigation }) {
-  useEffect(() => {
-    AppService.getPedidoById(idpedido)
-      .then((response) => {
-        console.log("load order: ", response);
-        setorder(response ? response : initialOrder);
 
-        AppService.getClienteById(order.cliente_id)
-          .then((response) => {
-            console.log("load client: ", response);
-            setorder(response ? response : initialClient);
-          })
-          .catch((err) => console.log("load client error: ", err));
-        AppService.getProductores()
-          .then((response) => {
-            if (response) {
-              console.log("load producer: ", response);
-              let producer = response.find((x) => x.id == order.productor_id);
-              setproducer(producer ? producer : initialProducer);
-            }
-          })
-          .catch((err) => console.log("load producer error: ", err));
-      })
-      .catch((err) => console.log("load order error: ", err));
-  }, [order]);
+  const colors = [
+    {id: 1, name:'Celeste'},
+    {id: 2, name:'Verde'},
+    {id: 3, name:'Amarillo'},
+    {id: 4, name:'Rosa'},
+    {id: 5, name:'Naranja'}
+  ];
+  
+  useEffect(() => {
+    AppService.getPedidoById_sp(idpedido).then(configData.bind(this));
+  },[order]);
+
+  useEffect(() => {
+    AppService.getDetalleProdcutoByPedidoId(idpedido).then(configDetails.bind(this));
+  },[order]);
+
+  const configDetails = (response) => {
+    setdetails(response);
+  }
+
+  const configData = (response) => {
+    const orderResult = response[0];
+    setorder(orderResult);
+    setclient({ id: orderResult.cliente_id, nombre: orderResult.clientName, apellido: orderResult.clientLastName});
+    setproducer({ id: orderResult.productor_id, nombre: orderResult.producerName});
+  }
   useEffect(() => {
     let newAmount = details.reduce((partialSum, dp) => {
       const price = productos.find((p) => p.id === dp.producto_id).precio;
@@ -51,7 +54,7 @@ export default function ShowOrder({ route, navigation }) {
   const [isEditable, setisEditable] = useState(editable ? true : false);
   navigation.setOptions({ title: `Pedido #${idpedido}` });
   const initialOrder = {
-    idPedido: -1,
+    id: -1,
     direccionEntrega: "",
     fechaEntrega: new Date(),
     estado: "pendiente",
@@ -83,7 +86,7 @@ export default function ShowOrder({ route, navigation }) {
   };
   const [producer, setproducer] = useState(initialProducer);
   const initialDetails = detallesproducto.filter(
-    (x) => x.pedido_id == order.idPedido
+    (x) => x.pedido_id == order.id
   );
   const [details, setdetails] = useState(initialDetails);
   const [showOptionsModal, setShowOptionsModal] = useState(false);
@@ -123,18 +126,18 @@ export default function ShowOrder({ route, navigation }) {
       cliente_id: client.id,
     };
 
-    let result = await AppService.updatePedido(order.idPedido, updatedOrder)
+    let result = await AppService.updatePedido(order.id, updatedOrder)
       .then((response) => response)
       .catch((err) => err);
     console.log("ok: ", result);
 
-    let newdetails = details.filter((x) => x.idDetalleDeProducto == -1);
+    let newdetails = details.filter((x) => x.id == -1);
     newdetails = newdetails.map((x) => {
       return {
         cantidad: x.cantidad,
         color: x.color,
         producto_id: x.producto_id,
-        pedido_id: order.idPedido,
+        pedido_id: order.id,
       };
     });
 
@@ -161,12 +164,12 @@ export default function ShowOrder({ route, navigation }) {
   };
 
   const setNewOrEditedProduct = (detail) => {
-    if (detail.idDetalleDeProducto === -1) {
-      detail.idDetalleDeProducto = details.length;
+    if (detail.id === -1) {
+      detail.id = details.length;
       setdetails([...details, detail]);
     } else {
       const indx = details.findIndex(
-        (prod) => prod.idDetalleDeProducto === detail.idDetalleDeProducto
+        (prod) => prod.id === detail.id
       );
       const detailProductsAux = details;
       detailProductsAux[indx] = detail;
@@ -346,7 +349,7 @@ export default function ShowOrder({ route, navigation }) {
             </View>
             <View style={{ paddingBottom: 10 }}>
               <Voucher
-                pedido_id={order.idPedido}
+                pedido_id={order.id}
                 clientFullName={`${client.nombre} ${client.apellido}`}
                 direccion={order.direccionEntrega}
                 anticipo={order.anticipo}

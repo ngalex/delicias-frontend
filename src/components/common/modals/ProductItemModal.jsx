@@ -15,8 +15,8 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
     if (selectedProduct === null && data && data.producto_id) {
       setSelectedProduct(data.producto_id);
     }
-    if (selectedColor === null && data && data.idColor) {
-      setSelectedColor(data.idColor);
+    if (selectedColor === null && data && data.color) {
+      setSelectedColor(data.color);
     }
   });
 
@@ -35,11 +35,10 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
 
   const callOnConfirmMethod = () => {
     onConfirm({
-      idDetalleDeProducto: data ? data.idDetalleDeProducto : -1,
-      idColor: selectedColor,
+      color: selectedColor,
       cantidad: amount,
       producto_id: selectedProduct,
-    });
+    }, data ? 'edit' : 'new');
   }
   const onShowModal = () => {
       setAmount(0);
@@ -81,7 +80,7 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
             <CommonInput
               label="Color del producto"
               type="combo"
-              value={data && data.idColor ? data.idColor : null}
+              value={data && data.color ? data.color : null}
               items={colors.map((x) => {
                 return { label: x.name, value: x.id };
               })}

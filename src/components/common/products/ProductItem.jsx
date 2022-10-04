@@ -31,9 +31,9 @@ export default function ProductItem({onClick, data}) {
   }
   return (
     <Pressable
-      onPress={() => onClick(data.idDetalleDeProduto)}
-      key={data.idDetalleDeProduto}
-      style={[CommonItemsProductStyles.itemContainer, bgList[data.idColor]]}
+      onPress={() => onClick(data.id)}
+      key={data.id}
+      style={[CommonItemsProductStyles.itemContainer, bgList[data.color]]}
     >
       <Text style={CommonItemsProductStyles.itemCount}>{data.cantidad}</Text>
       {getIconProduct(data.producto_id)}

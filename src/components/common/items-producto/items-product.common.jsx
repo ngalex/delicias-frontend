@@ -98,7 +98,7 @@ export default function CommonItemsProduct(props) {
     if (props.items.length > 0) {
       return props.items.map((value, index) => (
         <ProductItem
-          key={value.idDetalleDeProduto}
+          key={value.id}
           onClick={() => props.productItemModalHandler(value)}
           data={value}
         />

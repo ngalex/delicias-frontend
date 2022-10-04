@@ -23,7 +23,6 @@ export default function NuevoPedido({ navigation }) {
     AppService.getProductores()
       .then((response) => {
         setproducerList(response);
-        console.log(response);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -392,7 +391,19 @@ export default function NuevoPedido({ navigation }) {
   };
 
   const registerOrder = () => {
-    console.log(order);
+    const newOrder = {
+      direccionEntrega: order.direccionEntrega,
+      fechaEntrega: new Date(order.direccionEntrega),
+      estado: "pendiente",
+      montoTotal: amount,
+      anticipo: amount / 2,
+      delivery: order.delivery,
+      productor_id: producer.id,
+      cliente_id: client.id
+    }
+    console.log(newOrder);
+    console.log(detailProducts);
+    AppService.addPedido(newOrder, detailProducts);
   }
   //#region Modal de Producto
 
@@ -401,13 +412,12 @@ export default function NuevoPedido({ navigation }) {
     setShowModal(!showModal);
   };
 
-  const setNewOrEditedProduct = (detail) => {
-    if (detail.idDetalleDeProducto === -1) {
-      detail.idDetalleDeProducto = detailProducts.length;
+  const setNewOrEditedProduct = (detail, mode) => {
+    if (mode === 'new') {
       setDetailProducts([...detailProducts, detail]);
     } else {
       const indx = detailProducts.findIndex(
-        (prod) => prod.idDetalleDeProducto === detail.idDetalleDeProducto
+        (prod) => prod.id === detail.id
       );
       const detailProductsAux = detailProducts;
       detailProductsAux[indx] = detail;

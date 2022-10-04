@@ -40,6 +40,7 @@ export const getClientes = async () => {
 };
 
 export const getClienteById = async (id) => {
+  console.log(id);
   const { error, data } = await supabase
     .from("clientes")
     .select()
@@ -89,6 +90,15 @@ export const getPedidoById = async (id) => {
   if (error) throw error;
   return data;
 };
+
+export const getPedidoById_sp = async (idp) => {
+  let { data, error } = await supabase
+  .rpc('getpedidobyid_sp', {
+    idp
+  })
+  if (error) throw error;
+  return data;
+}
 
 //Insertar un pedido
 //Ejemplo de agregar pedido
