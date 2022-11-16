@@ -30,6 +30,10 @@ export default function ShowOrder({ route, navigation }) {
   },[order]);
 
   useEffect(() => {
+    AppService.getProductores().then(configProductores.bind(this));
+  },[order]);
+
+  useEffect(() => {
     AppService.getDetalleProdcutoByPedidoId(idpedido).then(configDetails.bind(this));
   },[order]);
 
@@ -37,8 +41,13 @@ export default function ShowOrder({ route, navigation }) {
     setdetails(response);
   }
 
+  const configProductores = (response) => {
+    setProducers(response);
+  }
+
   const configData = (response) => {
     const orderResult = response[0];
+    orderResult.fechaEntrega = orderResult.fechaEntrega.replaceAll('-', '/') + " 00:00";
     setorder(orderResult);
     setclient({ id: orderResult.cliente_id, nombre: orderResult.clientName, apellido: orderResult.clientLastName});
     setproducer({ id: orderResult.productor_id, nombre: orderResult.producerName});
@@ -56,7 +65,7 @@ export default function ShowOrder({ route, navigation }) {
   const initialOrder = {
     id: -1,
     direccionEntrega: "",
-    fechaEntrega: new Date(),
+    fechaEntrega: "",
     estado: "pendiente",
     montoTotal: 0,
     anticipo: 0,
@@ -96,6 +105,7 @@ export default function ShowOrder({ route, navigation }) {
   const [selectedProductItem, setSelectedProductItem] = useState();
   const [amount, setamount] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [producers, setProducers] = useState([]);
   const data = [
     { id: "1", value: "anulado" },
     { id: "2", value: "cancelado" },
@@ -117,7 +127,7 @@ export default function ShowOrder({ route, navigation }) {
 
     let updatedOrder = {
       direccionEntrega: order.direccionEntrega,
-      fechaEntrega: new Date(order.direccionEntrega),
+      fechaEntrega: new Date(order.fechaEntrega),
       estado: "pendiente",
       montoTotal: amount,
       anticipo: amount / 2,
@@ -130,26 +140,47 @@ export default function ShowOrder({ route, navigation }) {
       .then((response) => response)
       .catch((err) => err);
     console.log("ok: ", result);
-
-    let newdetails = details.filter((x) => x.id == -1);
-    newdetails = newdetails.map((x) => {
-      return {
-        cantidad: x.cantidad,
-        color: x.color,
-        producto_id: x.producto_id,
-        pedido_id: order.id,
-      };
-    });
-
-    result = await AppService.addDetallesProductos(newdetails)
-      .then((response) => response)
-      .catch((err) => err);
-
-    console.log("ok: ", result);
-    navigation.navigate("HomeScreen");
-
+    updateDetailProducts();
     return;
   };
+
+  const updateDetailProducts = async () => {
+    let newdetails = details.filter((x) => x.isNew);
+    if (newdetails.length > 0) {
+      newdetails = newdetails.map((x) => {
+        return {
+          cantidad: x.cantidad,
+          color: x.color,
+          producto_id: x.producto_id,
+          pedido_id: order.id,
+        };
+      });
+      let result = await AppService.addDetallesProductos(newdetails)
+        .then((response) => response)
+        .catch((err) => err);
+  
+      console.log("ok: ", result);
+    }
+    let editedDetails = details.filter((x) => x.isEdited);
+    if (editedDetails.length > 0) {
+      editedDetails = editedDetails.map((x) => {
+        return {
+          id: x.id,
+          cantidad: x.cantidad,
+          color: x.color,
+          producto_id: x.producto_id,
+          pedido_id: order.id,
+        };
+      });
+      let result = await AppService.updateDetallesProductos(editedDetails)
+        .then((response) => response)
+        .catch((err) => err);
+  
+      console.log("ok: ", result);
+    }
+    
+    navigation.navigate("HomeScreen");
+  }
 
   const resetOrder = () => {
     setorder(initialOrder);
@@ -163,14 +194,13 @@ export default function ShowOrder({ route, navigation }) {
     setShowModal(!showModal);
   };
 
-  const setNewOrEditedProduct = (detail) => {
-    if (detail.id === -1) {
-      detail.id = details.length;
+  const setNewOrEditedProduct = (detail, mode) => {
+    if (mode === 'new') {
+      detail.isNew = true;
       setdetails([...details, detail]);
     } else {
-      const indx = details.findIndex(
-        (prod) => prod.id === detail.id
-      );
+      detail.isEdited = true;
+      const indx = details.findIndex( (prod) => prod.id === detail.id );
       const detailProductsAux = details;
       detailProductsAux[indx] = detail;
       setdetails(detailProductsAux);
@@ -202,7 +232,7 @@ export default function ShowOrder({ route, navigation }) {
           <CommonInput
             type="text"
             label="Cliente"
-            value={`${client.nombre} ${client.apellido}`}
+            value={`${client.nombre} ${client.apellido ? client.apellido : ''}`}
             placeholder={"Escriba..."}
             onChangeInput={(val) => null}
             editable={false}
@@ -224,7 +254,7 @@ export default function ShowOrder({ route, navigation }) {
           <CommonInput
             type="date"
             label="Fecha de entrega"
-            value={getFormatedDate(order.fechaEntrega, "YYYY/MM/DD HH:mm")}
+            value={order.fechaEntrega}
             placeholder={"Escriba..."}
             onChangeInput={(val) => setorder({ ...order, fechaEntrega: val })}
             editable={isEditable}
@@ -235,14 +265,14 @@ export default function ShowOrder({ route, navigation }) {
             <CommonInput
               type="combo"
               label="Productor asignado"
-              placeholder={producer.nombre}
+              placeholder={`${producer.nombre} ${producer.apellido ? producer.apellido : ''}`}
               editable={!isEditable}
               value={{ label: producer.nombre, value: producer.id }}
-              items={productores.map((x) => {
+              items={producers.map((x) => {
                 return { label: x.nombre, value: x.id };
               })}
               onChangeInput={(val) =>
-                setproducer(productores.find((x) => x.id == val.value))
+                setproducer(producers.find((x) => x.id == val.value))
               }
             ></CommonInput>
           </View>
@@ -350,7 +380,7 @@ export default function ShowOrder({ route, navigation }) {
             <View style={{ paddingBottom: 10 }}>
               <Voucher
                 pedido_id={order.id}
-                clientFullName={`${client.nombre} ${client.apellido}`}
+                clientFullName={`${client.nombre} ${client.apellido ? client.apellido : ''}`}
                 direccion={order.direccionEntrega}
                 anticipo={order.anticipo}
                 montoTotal={order.montoTotal}

@@ -37,7 +37,6 @@ export default function CommonInput(prop) {
         <TextInput
           style={[inputCommonStyles.input, customInputStyle]}
           onChangeText={(text) => {
-            // setinputValue(text);
             prop.onChangeInput(text);
           }}
           keyboardType = {keyboardType}

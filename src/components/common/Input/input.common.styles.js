@@ -11,7 +11,8 @@ export const inputCommonStyles = StyleSheet.create({
         paddingBottom: 5,
         paddingLeft: 10,
         paddingRight: 10,
-        elevation: 5,
+        elevation: 15,
+        marginHorizontal: 15,
         shadowColor: baseColors.shadowColor
     },
     label: {

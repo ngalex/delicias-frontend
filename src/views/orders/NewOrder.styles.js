@@ -4,8 +4,8 @@ export const NewOrderStyles = StyleSheet.create({
     container: {
         flexDirection: "column",
         width: "100%",
-        paddingLeft: 20,
-        paddingRight: 20
+        paddingHorizontal: 5,
+        backgroundColor: "#FAFAFA",
     },
     subtitle: {
         fontSize: 18,

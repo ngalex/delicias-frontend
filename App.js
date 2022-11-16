@@ -15,9 +15,9 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen options={{ headerShown: false}} name="Pedidos" component={Main} />
-        <Tab.Screen name="Finanzas" component={Finances} />
-        <Tab.Screen name="Stock" component={Stocks} />
-        <Tab.Screen name="Herramientas" component={Tools} />
+        <Tab.Screen options={{ headerShown: false}} name="Finanzas" component={Finances} />
+        <Tab.Screen options={{ headerShown: false}} name="Stock" component={Stocks} />
+        <Tab.Screen options={{ headerShown: false}} name="Herramientas" component={Tools} />
       </Tab.Navigator>
     </NavigationContainer>
   )

@@ -34,11 +34,18 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
   ];
 
   const callOnConfirmMethod = () => {
-    onConfirm({
-      color: selectedColor,
-      cantidad: amount,
-      producto_id: selectedProduct,
-    }, data ? 'edit' : 'new');
+    if (data) {
+      data.color = selectedColor;
+      data.cantidad = amount;
+      data.producto_id = selectedProduct;
+      onConfirm(data, 'edit');
+    } else {
+      onConfirm({
+        color: selectedColor,
+        cantidad: amount,
+        producto_id: selectedProduct,
+      }, 'new');
+    }
   }
   const onShowModal = () => {
       setAmount(0);
@@ -47,7 +54,7 @@ export default function ProductItemModal({onConfirm, showModal, setShowModal, da
   }
 
   const checkEnableConfirmButtonModal = () => {
-    return amount > 0 && selectedColor !== null && selectedProduct !== null;
+    return (amount > 0 && selectedColor !== null && selectedProduct !== null) && (data ? (data.color !== selectedColor || data.cantidad !== amount || data.producto_id !== selectedProduct) : true);
   }
 
   return (

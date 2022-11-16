@@ -11,22 +11,24 @@ export default function OrderList({ displayMode, modalHandler, selectionHandler 
   
   useEffect(() => {
     getPedidos().then(mapGetOrders.bind(this));
-    console.log('tst');
-  },[dataCard]);
+    console.log('llamada a getPedidos');
+  },[]);
   
   
   const mapGetOrders = (response) => {
-    const newDataCard = [];
+    let newDataCard = [];
     response.forEach(order => {
       newDataCard.push({
         key: order.id,
-        topCol1: `${order.clientName} ${order.clientLastName}`,
+        topCol1: `${order.clientName} ${order.clientLastName !== null ? order.clientLastName : ''}`,
         midCol1: order.fechaEntrega,
         midCol2: null,
         botCol1: order.estado
       })
     });
-
+    if (displayMode === 'shortMode') {
+      newDataCard = newDataCard.slice(0, 3);
+    }
     setDataCard(newDataCard);
   }
 

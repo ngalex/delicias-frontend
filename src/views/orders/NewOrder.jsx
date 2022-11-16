@@ -42,7 +42,7 @@ export default function NuevoPedido({ navigation }) {
 
   const [last, setlast] = useState(false);
   const clientInitialState = {
-    id: 1,
+    id: null,
     nombre: null,
     apellido: null,
     dni: null,
@@ -85,36 +85,6 @@ export default function NuevoPedido({ navigation }) {
   const [showModal, setShowModal] = useState(false);
   const [selectedProductItem, setSelectedProductItem] = useState();
 
-  const recordOrder = async () => {
-    console.log(order);
-    console.log(detailProducts);
-    console.log(producer);
-
-    let neworder = {
-      direccionEntrega: order.direccionEntrega,
-      fechaEntrega: new Date(order.direccionEntrega),
-      estado: "pendiente",
-      montoTotal: amount,
-      anticipo: amount / 2,
-      delivery: order.delivery,
-      productor_id: producer.id,
-      cliente_id: client.id,
-    };
-
-    let newdetails = detailProducts.map((x) => {
-      return {
-        cantidad: x.cantidad,
-        color: x.color,
-        producto_id: x.producto_id,
-      };
-    });
-
-    let result = await AppService.addPedido(order.neworder, newdetails)
-      .then((response) => response)
-      .catch((err) => err);
-
-    console.log("ok: ", result);
-  };
 
   const loadClientForm = (clientData) => {
     return (
@@ -383,23 +353,48 @@ export default function NuevoPedido({ navigation }) {
             title="Confirmar"
             backgroundColor="#AEC8F1"
             width="45%"
-            onPress={() => { registerOrder(); navigation.navigate("HomeScreen");}}
+            onPress={() => { onConfirmOrder(); navigation.navigate("HomeScreen");}}
           ></ButtonP>
         </View>
       </View>
     );
   };
 
-  const registerOrder = () => {
+  const onConfirmOrder = () => {
+    if (client.id === null) {
+      const newClient = {
+        nombre: client.nombre,
+        apellido: client.apellido,
+        dni: client.dni,
+        telefono: client.telefono,
+        email: client.email,
+        direccion: client.direccion,
+        participaSorteo: client.participaSorteo,
+        participaPromocion: client.participaPromocion,
+      }
+      AppService.addCliente(newClient).then(response => {
+        if (response.error === null) {
+          const client = response.data[0];
+          registerOrder(client.id);
+        } else {
+          console.log(response.error);
+        }
+      });
+    } else {
+      registerOrder();
+    }
+  }
+
+  const registerOrder = (clientId) => {
     const newOrder = {
       direccionEntrega: order.direccionEntrega,
-      fechaEntrega: new Date(order.direccionEntrega),
+      fechaEntrega: new Date(order.fechaEntrega),
       estado: "pendiente",
       montoTotal: amount,
       anticipo: amount / 2,
       delivery: order.delivery,
       productor_id: producer.id,
-      cliente_id: client.id
+      cliente_id: clientId !== undefined ? clientId : client.id
     }
     console.log(newOrder);
     console.log(detailProducts);
