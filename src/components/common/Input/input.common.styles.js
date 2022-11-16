@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import Constants from 'expo-constants';
 import { baseColors } from "../../../constants/baseColors";
 
 export const inputCommonStyles = StyleSheet.create({
