@@ -1,9 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import CommonInput from "../../components/common/Input/input.common";
-import { productores } from "../../data/productores";
 import { detallesproducto } from "../../data/detalle-producto";
-import { getFormatedDate } from "react-native-modern-datepicker";
 import { ShowOrderStyles } from "./ShowOrder.styles";
 import CommonItemsProduct from "../../components/common/items-producto/items-product.common";
 import CustomModal from "../../components/common/modals/CustomModal";
@@ -16,14 +14,6 @@ import * as AppService from "../../services/service";
 import Voucher from "../../components/common/voucher/voucher.common";
 
 export default function ShowOrder({ route, navigation }) {
-
-  const colors = [
-    {id: 1, name:'Celeste'},
-    {id: 2, name:'Verde'},
-    {id: 3, name:'Amarillo'},
-    {id: 4, name:'Rosa'},
-    {id: 5, name:'Naranja'}
-  ];
   
   useEffect(() => {
     AppService.getPedidoById_sp(idpedido).then(configData.bind(this));
@@ -47,7 +37,8 @@ export default function ShowOrder({ route, navigation }) {
 
   const configData = (response) => {
     const orderResult = response[0];
-    orderResult.fechaEntrega = orderResult.fechaEntrega.replaceAll('-', '/') + " 00:00";
+    console.log("🚀 ~ file: ShowOrder.jsx ~ line 42 ~ configData ~ orderResult", orderResult)
+    orderResult.fechaEntrega = orderResult.fechaEntrega.replace('-', '/') + " 00:00";
     setorder(orderResult);
     setclient({ id: orderResult.cliente_id, nombre: orderResult.clientName, apellido: orderResult.clientLastName});
     setproducer({ id: orderResult.productor_id, nombre: orderResult.producerName});
@@ -226,20 +217,22 @@ export default function ShowOrder({ route, navigation }) {
 
   return (
     <ScrollView>
-      <ButtonP
-        title="Opciones"
-        width={90}
-        backgroundColor="#F9C3C3"
-        onPress={() => {
-          setShowOptionsModal(true);
-        }}
-      ></ButtonP>
       <View style={ShowOrderStyles.container}>
+        <View style={ShowOrderStyles.margin_bottom}>
+          <ButtonP
+            title="Opciones"
+            width={90}
+            backgroundColor="#F9C3C3"
+            onPress={() => {
+              setShowOptionsModal(true);
+            }}
+          ></ButtonP>
+        </View>
         <View style={{ marginBottom: 15 }}>
           <CommonInput
             type="text"
             label="Cliente"
-            value={`${client.nombre} ${client.apellido ? client.apellido : ''}`}
+            value={`${client.nombre} ${client.apellido ? client.apellido : ""}`}
             placeholder={"Escriba..."}
             onChangeInput={(val) => null}
             editable={false}
@@ -272,7 +265,9 @@ export default function ShowOrder({ route, navigation }) {
             <CommonInput
               type="combo"
               label="Productor asignado"
-              placeholder={`${producer.nombre} ${producer.apellido ? producer.apellido : ''}`}
+              placeholder={`${producer.nombre} ${
+                producer.apellido ? producer.apellido : ""
+              }`}
               editable={!isEditable}
               value={{ label: producer.nombre, value: producer.id }}
               items={producers.map((x) => {
@@ -387,7 +382,9 @@ export default function ShowOrder({ route, navigation }) {
             <View style={{ paddingBottom: 10 }}>
               <Voucher
                 pedido_id={order.id}
-                clientFullName={`${client.nombre} ${client.apellido ? client.apellido : ''}`}
+                clientFullName={`${client.nombre} ${
+                  client.apellido ? client.apellido : ""
+                }`}
                 direccion={order.direccionEntrega}
                 anticipo={order.anticipo}
                 montoTotal={order.montoTotal}
@@ -433,7 +430,7 @@ export default function ShowOrder({ route, navigation }) {
           showButtonClose={false}
           enableConfirmButton={true}
           onConfirm={() => {
-            finishOrder()
+            finishOrder();
           }}
         >
           <View

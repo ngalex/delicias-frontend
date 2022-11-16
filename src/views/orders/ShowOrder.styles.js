@@ -8,6 +8,9 @@ export const ShowOrderStyles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20
     },
+    margin_bottom: {
+        marginBottom: 10,
+    },
     row: {
         flexDirection: "row",
         justifyContent: "space-between"

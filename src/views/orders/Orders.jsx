@@ -57,9 +57,6 @@ export default function Pedidos({navigation}) {
     });
   }
 
-  const GetPattern = (pattern) => {
-  }
-
   return (
     <View style={styles.container}>
       <View style={SearchBarStyles.container}>

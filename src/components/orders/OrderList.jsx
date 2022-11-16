@@ -1,9 +1,10 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import React, { useState, useEffect } from "react";
 import Card from "../common/Card";
-import { getPedidos, getProductos } from "./../../services/service";
+import { getPedidos } from "./../../services/service";
 import { ScrollView } from "react-native";
 import * as clientService from "../../services/client-service";
+import * as DateUtils from "../../utilities/date-utils";
 
 export default function OrderList({
   reloadList,
@@ -41,20 +42,33 @@ export default function OrderList({
 
   const mapGetOrders = (response) => {
     let newDataCard = [];
+
+    response = response.sort((a, b) => {
+      datea = DateUtils.getDateFromString(a.fechaEntrega);
+      dateb = DateUtils.getDateFromString(b.fechaEntrega);
+      return datea < dateb ? 1 : -1;
+    });
+
+    if (displayMode === "shortMode") {
+      response = response
+        .filter(
+          (order) => order.fechaEntrega.substring(0,10) === DateUtils.getDateString(new Date())
+        )
+        .slice(0, 3);
+    }
+
     response.forEach((order) => {
       newDataCard.push({
         key: order.id,
         topCol1: `${order.clientName} ${
           order.clientLastName !== null ? order.clientLastName : ""
         }`,
-        midCol1: order.fechaEntrega,
+        midCol1: displayMode === "shortMode" ? DateUtils.userFormatTime(order.fechaEntrega) : DateUtils.userFormatDate(order.fechaEntrega),
         midCol2: null,
         botCol1: order.estado,
       });
     });
-    if (displayMode === "shortMode") {
-      newDataCard = newDataCard.slice(0, 3);
-    }
+
     setDataCard(newDataCard);
   };
 

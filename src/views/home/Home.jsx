@@ -3,10 +3,11 @@ import React from 'react'
 import OrderList from '../../components/orders/OrderList';
 import BigButton from '../../components/common/buttons/BigButton';
 import { ButtonP } from '../../components/common/buttons/ButtonP';
+import Constants from "expo-constants";
 
 export default function Home({ navigation }) {
   return (
-    <View style={styles.container}>
+    <View style={{...styles.container, marginTop: Constants.statusBarHeight}}>
       <View style={styles.orderListContainer}>
         <Text style={styles.title}>Pedidos de hoy</Text>
         <OrderList
