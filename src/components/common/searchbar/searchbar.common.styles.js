@@ -1,10 +1,11 @@
 import { StyleSheet } from "react-native";
-import Constants from 'expo-constants';
 
 export const commonSearchBarStyles = StyleSheet.create({
     container: {
         flexDirection: "row",
         height: 60,
+        marginLeft: 5,
+        marginRight: 5
     },
     containerSearch: {
         backgroundColor: "#FFFFFF",
@@ -12,12 +13,12 @@ export const commonSearchBarStyles = StyleSheet.create({
         elevation: 5,
         flexDirection: "row",
         height: 60,
-        width: "100%",
         justifyContent: "space-between",
         alignItems: "center",
         paddingLeft: 20,
         paddingRight: 25,
-        borderRadius: 50
+        borderRadius: 50,
+        width: "100%",
     },
     searchInput: {
         fontSize: 18,

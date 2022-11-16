@@ -3,9 +3,9 @@ import { React, useState } from 'react';
 import OrderList from '../../components/orders/OrderList';
 import CustomModal from './../../components/common/modals/CustomModal';
 import SelectList from 'react-native-dropdown-select-list'
-import { ButtonP } from './../../components/common/buttons/ButtonP';
 import { updateEstadoPedido } from './../../services/service';
 import { ShowOrderStyles } from './ShowOrder.styles';
+import CommonSearchBar from '../../components/common/searchbar/searchbar.common';
 
 export default function Pedidos({navigation}) {
   const data = [
@@ -20,6 +20,7 @@ export default function Pedidos({navigation}) {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [enableConfirmButtonModal, setEnableConfirmButtonModal] = useState(false)
   const [reloadList, setReloadList] = useState(false)
+  const [pattern, setpattern] = useState(null);
 
   const modalHandler = (id) => {
     setSelectedOrder(id);
@@ -56,13 +57,21 @@ export default function Pedidos({navigation}) {
     });
   }
 
+  const GetPattern = (pattern) => {
+  }
+
   return (
     <View style={styles.container}>
+      <View style={SearchBarStyles.container}>
+        <CommonSearchBar placeholder={"Escriba un nombre o DNI"} onChangeInput={setpattern}></CommonSearchBar>
+      </View>
       <OrderList
+        pattern={pattern}
         reloadList={reloadList}
         displayMode={"orderMode"}
         modalHandler={modalHandler}
-        selectionHandler={showOrder}/>
+        selectionHandler={showOrder}
+      />
       <CustomModal
         visible={showModal}
         setShowModal={setShowModal}
@@ -110,26 +119,26 @@ export default function Pedidos({navigation}) {
         </View>
       </CustomModal>
       <CustomModal
-          visible={showFinishModal}
-          setShowModal={setShowFinishModal}
-          title={"Finalizar Pedido"}
-          showFooter={true}
-          showButtonClose={false}
-          enableConfirmButton={true}
-          onConfirm={() => {
-            finishOrder()
-          }}
+        visible={showFinishModal}
+        setShowModal={setShowFinishModal}
+        title={"Finalizar Pedido"}
+        showFooter={true}
+        showButtonClose={false}
+        enableConfirmButton={true}
+        onConfirm={() => {
+          finishOrder();
+        }}
+      >
+        <View
+          style={[
+            ShowOrderStyles.customContentContainer,
+            { paddingBottom: 50, paddingTop: 20 },
+          ]}
         >
-          <View
-            style={[
-              ShowOrderStyles.customContentContainer,
-              { paddingBottom: 50, paddingTop: 20 },
-            ]}
-          >
-            <Text style={{ fontSize: 18, textAlign: "center" }}>
-              ¿Estas seguro de que deseas finalizar el pedido?
-            </Text>
-          </View>
+          <Text style={{ fontSize: 18, textAlign: "center" }}>
+            ¿Estas seguro de que deseas finalizar el pedido?
+          </Text>
+        </View>
       </CustomModal>
     </View>
   );
@@ -140,6 +149,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#FBFBFB'
+  }
+})
+
+const SearchBarStyles = StyleSheet.create({
+  container: {
+    marginTop: 20,
+    marginBottom: 15
   }
 })
 

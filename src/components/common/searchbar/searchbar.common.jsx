@@ -12,12 +12,35 @@ const CommonSearchBar = (props) => {
     props.onChangeInput(value);
   };
 
+  const clearInput = () => {
+    if (!pattern) return;
+    setPattern("");
+    onChangeInput("");
+  };
+
   return (
     <View style={commonSearchBarStyles.container}>
       <View style={commonSearchBarStyles.containerSearch}>
+        {pattern ? (
+          <Button
+            type="clear"
+            icon={
+              <Icon
+                name="remove"
+                size={15}
+                color="#878787"
+                onPress={() => clearInput()}
+              ></Icon>
+            }
+          ></Button>
+        ) : null}
+
         <TextInput
           style={commonSearchBarStyles.searchInput}
-          onChangeText={onChangeInput}
+          value={pattern}
+          onChangeText={setPattern}
+          onSubmitEditing={() => onChangeInput(pattern)}
+          placeholder={props.placeholder}
         ></TextInput>
         <Button
           type="clear"
