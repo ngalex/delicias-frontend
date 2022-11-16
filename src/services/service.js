@@ -76,7 +76,7 @@ export const getPedidos = async () => {
   //   }
   // ]
   //#endregion
-  const { error, data } = await supabase.from("ordersview").select();
+  const { error, data } = await supabase.from("ordersview").select().order('fechaEntrega', { ascending: false });
   if (error) throw error;
   return data;
 };
@@ -100,6 +100,14 @@ export const getPedidoById_sp = async (idp) => {
   return data;
 }
 
+export const updateEstadoPedido = async (idp, newStatus) =>  {
+  const { error, data } = await supabase
+  .from('pedidos')
+  .update({ estado: newStatus })
+  .eq('id', idp)
+  if (error) throw error;
+  return data;
+}
 //Insertar un pedido
 //Ejemplo de agregar pedido
 // addPedido(

@@ -4,6 +4,8 @@ import OrderList from '../../components/orders/OrderList';
 import CustomModal from './../../components/common/modals/CustomModal';
 import SelectList from 'react-native-dropdown-select-list'
 import { ButtonP } from './../../components/common/buttons/ButtonP';
+import { updateEstadoPedido } from './../../services/service';
+import { ShowOrderStyles } from './ShowOrder.styles';
 
 export default function Pedidos({navigation}) {
   const data = [
@@ -13,9 +15,11 @@ export default function Pedidos({navigation}) {
   ];
 
   const [showModal, setShowModal] = useState(false)
+  const [showFinishModal, setShowFinishModal] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState()
   const [selectedStatus, setSelectedStatus] = useState("");
   const [enableConfirmButtonModal, setEnableConfirmButtonModal] = useState(false)
+  const [reloadList, setReloadList] = useState(false)
 
   const modalHandler = (id) => {
     setSelectedOrder(id);
@@ -30,14 +34,32 @@ export default function Pedidos({navigation}) {
   
   const changeOrderStatus = () => {
     console.log(`Cambia el estado del pedido con id ${selectedOrder} a estado ${selectedStatus} `);
-    setEnableConfirmButtonModal(false);
-    setShowModal(!showModal);
+    if (selectedStatus === 'Finalizado') {
+      setEnableConfirmButtonModal(false);
+      setShowModal(!showModal);
+      setShowFinishModal(!showFinishModal);
+    } else {
+      updateEstadoPedido(selectedOrder, selectedStatus).then( response => {
+        console.log(response);
+        setEnableConfirmButtonModal(false);
+        setReloadList(!reloadList);
+        setShowModal(!showModal);
+      });
+    }
   }
   
+  const finishOrder = () => {
+    updateEstadoPedido(selectedOrder, selectedStatus).then( response => {
+      console.log(response);
+      setReloadList(!reloadList);
+      setShowFinishModal(!showFinishModal);
+    });
+  }
 
   return (
     <View style={styles.container}>
       <OrderList
+        reloadList={reloadList}
         displayMode={"orderMode"}
         modalHandler={modalHandler}
         selectionHandler={showOrder}/>
@@ -86,6 +108,28 @@ export default function Pedidos({navigation}) {
             />
           </View>
         </View>
+      </CustomModal>
+      <CustomModal
+          visible={showFinishModal}
+          setShowModal={setShowFinishModal}
+          title={"Finalizar Pedido"}
+          showFooter={true}
+          showButtonClose={false}
+          enableConfirmButton={true}
+          onConfirm={() => {
+            finishOrder()
+          }}
+        >
+          <View
+            style={[
+              ShowOrderStyles.customContentContainer,
+              { paddingBottom: 50, paddingTop: 20 },
+            ]}
+          >
+            <Text style={{ fontSize: 18, textAlign: "center" }}>
+              ¿Estas seguro de que deseas finalizar el pedido?
+            </Text>
+          </View>
       </CustomModal>
     </View>
   );

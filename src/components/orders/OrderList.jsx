@@ -4,7 +4,7 @@ import Card from '../common/Card';
 import { getPedidos, getProductos } from './../../services/service';
 import { ScrollView } from 'react-native';
 
-export default function OrderList({ displayMode, modalHandler, selectionHandler }) {
+export default function OrderList({ reloadList, displayMode, modalHandler, selectionHandler }) {
 
   const [dataCard, setDataCard] = useState([
   ]);
@@ -12,7 +12,7 @@ export default function OrderList({ displayMode, modalHandler, selectionHandler 
   useEffect(() => {
     getPedidos().then(mapGetOrders.bind(this));
     console.log('llamada a getPedidos');
-  },[]);
+  },[reloadList]);
   
   
   const mapGetOrders = (response) => {

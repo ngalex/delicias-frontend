@@ -144,6 +144,13 @@ export default function ShowOrder({ route, navigation }) {
     return;
   };
 
+  const finishOrder = () => {
+    AppService.updateEstadoPedido(order.id, 'Finalizado').then( response => {
+      console.log(response);
+      setshowFinishModal(false);
+    navigation.navigate("HomeScreen");
+    });
+  }
   const updateDetailProducts = async () => {
     let newdetails = details.filter((x) => x.isNew);
     if (newdetails.length > 0) {
@@ -426,9 +433,7 @@ export default function ShowOrder({ route, navigation }) {
           showButtonClose={false}
           enableConfirmButton={true}
           onConfirm={() => {
-            setorder({ ...order, estado: "finalizado" });
-            updateOrder();
-            setshowFinishModal(false);
+            finishOrder()
           }}
         >
           <View
