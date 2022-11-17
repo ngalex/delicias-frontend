@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import CommonInput from "../../components/common/Input/input.common";
 import { detallesproducto } from "../../data/detalle-producto";
 import { ShowOrderStyles } from "./ShowOrder.styles";
@@ -12,12 +12,32 @@ import { productos } from "../../data/productos";
 import SelectList from "react-native-dropdown-select-list";
 import * as AppService from "../../services/service";
 import Voucher from "../../components/common/voucher/voucher.common";
+import { baseColors } from "../../constants/baseColors";
 
 export default function ShowOrder({ route, navigation }) {
   
   useEffect(() => {
     AppService.getPedidoById_sp(idpedido).then(configData.bind(this));
   },[order]);
+
+  useEffect(() => {
+    console.log('aca');
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={ShowOrderStyles.margin_bottom}>
+          <ButtonP
+            title="Opciones"
+            width={90}
+            customStyles={{ paddingVertical : 8 }}
+            backgroundColor="#D5D5D5"
+            onPress={() => {
+              setShowOptionsModal(true);
+            }}
+          ></ButtonP>
+        </View>
+      ),
+    });
+  },[navigation]);
 
   useEffect(() => {
     AppService.getProductores().then(configProductores.bind(this));
@@ -38,7 +58,7 @@ export default function ShowOrder({ route, navigation }) {
   const configData = (response) => {
     const orderResult = response[0];
     console.log("🚀 ~ file: ShowOrder.jsx ~ line 42 ~ configData ~ orderResult", orderResult)
-    orderResult.fechaEntrega = orderResult.fechaEntrega.replace('-', '/') + " 00:00";
+    orderResult.fechaEntrega = orderResult.fechaEntrega.replace(/-/g,'/') + " 00:00";
     setorder(orderResult);
     setclient({ id: orderResult.cliente_id, nombre: orderResult.clientName, apellido: orderResult.clientLastName});
     setproducer({ id: orderResult.productor_id, nombre: orderResult.producerName});
@@ -57,7 +77,7 @@ export default function ShowOrder({ route, navigation }) {
     id: -1,
     direccionEntrega: "",
     fechaEntrega: "",
-    estado: "pendiente",
+    estado: "PENDIENTE",
     montoTotal: 0,
     anticipo: 0,
     delivery: false,
@@ -98,8 +118,8 @@ export default function ShowOrder({ route, navigation }) {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [producers, setProducers] = useState([]);
   const data = [
-    { id: "1", value: "anulado" },
-    { id: "2", value: "cancelado" },
+    { id: "1", value: "ANULADO" },
+    { id: "2", value: "CANCELADO" },
   ];
 
   const updateOrder = async () => {
@@ -119,7 +139,7 @@ export default function ShowOrder({ route, navigation }) {
     let updatedOrder = {
       direccionEntrega: order.direccionEntrega,
       fechaEntrega: new Date(order.fechaEntrega),
-      estado: "pendiente",
+      estado: "PENDIENTE",
       montoTotal: amount,
       anticipo: amount / 2,
       delivery: order.delivery,
@@ -136,9 +156,17 @@ export default function ShowOrder({ route, navigation }) {
   };
 
   const finishOrder = () => {
-    AppService.updateEstadoPedido(order.id, 'Finalizado').then( response => {
+    AppService.updateEstadoPedido(order.id, 'FINALIZADO').then( response => {
       console.log(response);
       setshowFinishModal(false);
+    navigation.navigate("HomeScreen");
+    });
+  }
+
+  const cancelOrder = () => {
+    AppService.updateEstadoPedido(order.id, selectedStatus).then( response => {
+      console.log(response);
+      setshowCancelModal(false);
     navigation.navigate("HomeScreen");
     });
   }
@@ -215,19 +243,65 @@ export default function ShowOrder({ route, navigation }) {
     setamount(newAmount);
   };
 
+  const setMessageBaja = () => {
+    switch (selectedStatus) {
+      case 'ANULADO':
+        return <Text style={{marginHorizontal: 10, color: '#333'}}>El Anticipo entregado del pedido sera
+        registrado como un ingreso y el estado del
+        pedido pasara a estado ANULADO</Text>
+      case 'CANCELADO':
+        return <Text style={{marginHorizontal: 10, color: '#333'}}>El Anticipo entregado del pedido NO sera
+        registrado como un ingreso y el estado del
+        pedido pasara a estado CANCELADO</Text>
+      default:
+        break;
+    }
+  }
+
+  const renderEditedButtons = () => {
+    if (order.estado === 'ACTIVO' || order.estado === 'PENDIENTE'){
+      return(
+        <>
+        <View style={{ paddingBottom: 10 }}>
+              <ButtonP
+                title="Editar"
+                width={300}
+                backgroundColor="#F9C3C3"
+                onPress={() => {
+                  setisEditable(true);
+                  setShowOptionsModal(false);
+                }}
+              ></ButtonP>
+            </View>
+            <View style={{ paddingBottom: 10 }}>
+              <ButtonP
+                title="Finalizar"
+                width={300}
+                backgroundColor="#F9C3C3"
+                onPress={() => {
+                  setshowFinishModal(true);
+                }}
+              ></ButtonP>
+            </View>
+            <View style={{ paddingBottom: 10 }}>
+              <ButtonP
+                title="Dar de baja"
+                width={300}
+                backgroundColor="#F9C3C3"
+                onPress={() => {
+                  setSelectedStatus(null);
+                  setshowCancelModal(true);
+                }}
+              ></ButtonP>
+            </View>
+        </>
+      )
+    }
+  }
+
   return (
     <ScrollView>
       <View style={ShowOrderStyles.container}>
-        <View style={ShowOrderStyles.margin_bottom}>
-          <ButtonP
-            title="Opciones"
-            width={90}
-            backgroundColor="#F9C3C3"
-            onPress={() => {
-              setShowOptionsModal(true);
-            }}
-          ></ButtonP>
-        </View>
         <View style={{ marginBottom: 15 }}>
           <CommonInput
             type="text"
@@ -368,17 +442,7 @@ export default function ShowOrder({ route, navigation }) {
           onConfirm={() => {}}
         >
           <View style={[ShowOrderStyles.customContentContainer]}>
-            <View style={{ paddingBottom: 10 }}>
-              <ButtonP
-                title="Editar"
-                width={300}
-                backgroundColor="#F9C3C3"
-                onPress={() => {
-                  setisEditable(true);
-                  setShowOptionsModal(false);
-                }}
-              ></ButtonP>
-            </View>
+            {renderEditedButtons()}
             <View style={{ paddingBottom: 10 }}>
               <Voucher
                 pedido_id={order.id}
@@ -389,26 +453,6 @@ export default function ShowOrder({ route, navigation }) {
                 anticipo={order.anticipo}
                 montoTotal={order.montoTotal}
               ></Voucher>
-            </View>
-            <View style={{ paddingBottom: 10 }}>
-              <ButtonP
-                title="Finalizar"
-                width={300}
-                backgroundColor="#F9C3C3"
-                onPress={() => {
-                  setshowFinishModal(true);
-                }}
-              ></ButtonP>
-            </View>
-            <View style={{ paddingBottom: 10 }}>
-              <ButtonP
-                title="Dar de baja"
-                width={300}
-                backgroundColor="#F9C3C3"
-                onPress={() => {
-                  setshowCancelModal(true);
-                }}
-              ></ButtonP>
             </View>
             <View style={{ paddingBottom: 10 }}>
               <ButtonP
@@ -453,53 +497,64 @@ export default function ShowOrder({ route, navigation }) {
           showButtonClose={false}
           enableConfirmButton={selectedStatus ? true : false}
           onConfirm={() => {
-            setorder({ ...order, estado: selectedStatus });
-            updateOrder();
-            setshowCancelModal(false);
+            cancelOrder()
           }}
         >
           <View
             style={[
-              ShowOrderStyles.customContentContainer,
+              ShowOrderStyles.modal_customContentContainer,
               { paddingBottom: 50, paddingTop: 20 },
             ]}
           >
-            <Text style={{ fontSize: 18, textAlign: "center" }}>
+            <Text style={{ fontSize: 17, textAlign: "left", marginHorizontal: 10, color: '#333', fontWeight: '500' }}>
               Esta a punto de dar de baja un pedido ¿Desea Anularlo o
               Cancelarlo?
             </Text>
-            <SelectList
-              search={false}
-              placeholder={"Selecciona un estado"}
-              setSelected={setSelectedStatus}
-              data={data}
-              dropdownStyles={{
-                shadowColor: "#000",
-                elevation: 24,
-                borderWidth: 0,
-                zIndex: 200,
-                backgroundColor: "#FAFAFA",
-              }}
-              inputStyles={{
-                color: "#8E8E8E",
-                fontSize: 18,
-                fontWeight: "500",
-              }}
-              dropdownTextStyles={{
-                color: "#8E8E8E",
-                fontSize: 18,
-                fontWeight: "500",
-              }}
-              boxStyles={{
-                borderWidth: 0,
-                backgroundColor: "#FAFAFA",
-                shadowColor: "#333",
-                elevation: 4,
-              }}
-            />
+            <View style={[modalStyles.toggle]}>
+              <SelectList
+                search={false}
+                placeholder={"Selecciona un estado"}
+                setSelected={setSelectedStatus}
+                data={data}
+                dropdownStyles={{
+                  shadowColor: "#000",
+                  elevation: 24,
+                  borderWidth: 0,
+                  zIndex: 200,
+                  backgroundColor: baseColors.fondoApp,
+                }}
+                inputStyles={{
+                  color: "#8E8E8E",
+                  fontSize: 18,
+                  fontWeight: "500",
+                }}
+                dropdownTextStyles={{
+                  color: "#8E8E8E",
+                  fontSize: 18,
+                  fontWeight: "500",
+                }}
+                boxStyles={{
+                  borderWidth: 0,
+                  backgroundColor: baseColors.fondoApp,
+                  shadowColor: "#333",
+                  elevation: 4,
+                }}
+              />
+            </View>
+            <View style={{ marginTop: 70 }}>
+              {setMessageBaja()}
+            </View>
           </View>
         </CustomModal>
       </View>
     </ScrollView>
   );
 }
+const modalStyles = StyleSheet.create({
+  toggle: {
+    position: 'absolute',
+    zIndex: 200,
+    top: 70,
+    width: '100%'
+  },
+})

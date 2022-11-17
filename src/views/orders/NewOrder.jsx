@@ -65,7 +65,7 @@ export default function NuevoPedido({ navigation }) {
     productor_id: 0,
     direccionEntrega: null,
     fechaEntrega: null,
-    estado: "pendiente",
+    estado: "PENDIENTE",
     montoTotal: 0,
     anticipo: 0,
     delivery: false,
@@ -389,7 +389,7 @@ export default function NuevoPedido({ navigation }) {
     const newOrder = {
       direccionEntrega: order.direccionEntrega,
       fechaEntrega: new Date(order.fechaEntrega),
-      estado: "pendiente",
+      estado: "PENDIENTE",
       montoTotal: amount,
       anticipo: amount / 2,
       delivery: order.delivery,
