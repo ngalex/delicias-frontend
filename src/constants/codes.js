@@ -1,5 +1,5 @@
-export const PENDIENTE = "pendiente";
-export const CANCELADO = "cancelado";
-export const ANULADO = "anulado";
-export const ACTIVO = "activo";
-export const FINALIZADO = "finalizado";
+export const PENDIENTE = "PENDIENTE";
+export const CANCELADO = "CANCELADO";
+export const ANULADO = "ANULADO";
+export const ACTIVO = "ACTIVO";
+export const FINALIZADO = "FINALIZADO";

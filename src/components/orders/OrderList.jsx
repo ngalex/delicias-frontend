@@ -60,9 +60,9 @@ export default function OrderList({
           (order) =>
             order.fechaEntrega.substring(0, 10) ===
               DateUtils.getDateString(new Date()) &&
-            order.estado.toLowerCase() !== Codes.FINALIZADO &&
-            order.estado.toLowerCase() !== Codes.ANULADO &&
-            order.estado.toLowerCase() !== Codes.CANCELADO
+            order.estado.toUpperCase() !== Codes.FINALIZADO &&
+            order.estado.toUpperCase() !== Codes.ANULADO &&
+            order.estado.toUpperCase() !== Codes.CANCELADO
         )
         .slice(0, 3);
     }

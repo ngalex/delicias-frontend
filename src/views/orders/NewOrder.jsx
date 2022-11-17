@@ -156,7 +156,7 @@ export default function NuevoPedido({ navigation }) {
             alignItems: "center",
           }}
         >
-          <Text style={{ flexGrow: 1 }}>
+          <Text style={{ flexGrow: 1, color: 'gray' }}>
             {"¿Desea recibir ofertas por correo?"}
           </Text>
           <CommonInput
@@ -175,7 +175,7 @@ export default function NuevoPedido({ navigation }) {
             alignItems: "center",
           }}
         >
-          <Text style={{ flexGrow: 1 }}>{"¿Desea participar en sorteos?"}</Text>
+          <Text style={{ flexGrow: 1, color: 'gray' }}>{"¿Desea participar en sorteos?"}</Text>
           <CommonInput
             type="switch"
             value={isEnabledSorteo}
@@ -198,7 +198,7 @@ export default function NuevoPedido({ navigation }) {
           : loadClientForm(clientInitialState)}
 
         <Text style={NewOrderStyles.subtitle}>Datos de Pedido</Text>
-        <View style={{ marginBottom: 15 }}>
+        <View style={{ marginBottom: 15, width: '100%' }}>
           <CommonInput
             type="text"
             label="Dirección"
