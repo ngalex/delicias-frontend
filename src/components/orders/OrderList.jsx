@@ -5,6 +5,7 @@ import { getPedidos } from "./../../services/service";
 import { ScrollView } from "react-native";
 import * as clientService from "../../services/client-service";
 import * as DateUtils from "../../utilities/date-utils";
+import * as Codes from '../../constants/codes';
 
 export default function OrderList({
   reloadList,
@@ -33,12 +34,16 @@ export default function OrderList({
   }, [reloadList, pattern]);
 
   useEffect(() => {
+    refreshOrders();
+  }, [reloadList]);
+
+  const refreshOrders = () => {
     getPedidos().then((response) => {
       setrawData(response);
       mapGetOrders(response);
     });
     console.log("llamada a getPedidos");
-  }, [reloadList]);
+  }
 
   const mapGetOrders = (response) => {
     let newDataCard = [];
@@ -52,7 +57,12 @@ export default function OrderList({
     if (displayMode === "shortMode") {
       response = response
         .filter(
-          (order) => order.fechaEntrega.substring(0,10) === DateUtils.getDateString(new Date())
+          (order) =>
+            order.fechaEntrega.substring(0, 10) ===
+              DateUtils.getDateString(new Date()) &&
+            order.estado.toLowerCase() !== Codes.FINALIZADO &&
+            order.estado.toLowerCase() !== Codes.ANULADO &&
+            order.estado.toLowerCase() !== Codes.CANCELADO
         )
         .slice(0, 3);
     }
@@ -68,7 +78,6 @@ export default function OrderList({
         botCol1: order.estado,
       });
     });
-
     setDataCard(newDataCard);
   };
 
