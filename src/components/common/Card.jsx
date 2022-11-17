@@ -32,7 +32,6 @@ export default function Card(props) {
     }
   };
   function renderBottom() {
-    // if (props.displayMode !== "shortMode") {
       return (
         <View style={[styles.row, styles.bottom]}>
           <View>
@@ -41,7 +40,6 @@ export default function Card(props) {
           {props.displayMode !== "shortMode" ? buildButtonStatus() : null}
         </View>
       );
-    // }
     return null;
   }
   const getColorCircle = () => {
