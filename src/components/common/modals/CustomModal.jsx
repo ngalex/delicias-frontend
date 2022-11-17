@@ -4,6 +4,7 @@ import { Modal } from 'react-native';
 import { ButtonP } from '../buttons/ButtonP';
 import SelectList from 'react-native-dropdown-select-list'
 import { Button, Icon } from 'react-native-elements';
+import { baseColors } from '../../../constants/baseColors';
 
 export default function CustomModal(props) {
 
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
         padding: 12
     },
     modalContainer: {
-        backgroundColor: '#FAFAFA',
+        backgroundColor: baseColors.fondoApp,
         padding: 10,
         borderRadius: 35,
         shadowColor: "#000",

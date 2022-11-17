@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 export function ButtonP(props) {
-  const { onPress, title, backgroundColor, width, disabled } = props;
+  const { onPress, title, backgroundColor, width, disabled, customStyles } = props;
 
   const disabledStyle = {
     opacity: disabled ? 0.4 : 1
@@ -10,7 +10,7 @@ export function ButtonP(props) {
       style={{
         ...styles.button,
         backgroundColor,
-        width, ...disabledStyle
+        width, ...disabledStyle, ...customStyles
       }}
       onPress={onPress}
       disabled={disabled}

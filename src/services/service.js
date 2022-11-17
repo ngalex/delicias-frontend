@@ -67,7 +67,7 @@ export const getPedidos = async () => {
   //     "created_at": "2022-09-29T06:04:48.279383+00:00",
   //     "delivery": true,
   //     "direccionEntrega": "prueba9999",
-  //     "estado": "pendiente",
+  //     "estado": "PENDIENTE",
   //     "fechaEntrega": "2022-02-19",
   //     "id": 32,
   //     "montoTotal": 100,
@@ -76,7 +76,7 @@ export const getPedidos = async () => {
   //   }
   // ]
   //#endregion
-  const { error, data } = await supabase.from("ordersview").select().order('fechaEntrega', { ascending: false });
+  const { error, data } = await supabase.from("ordersview").select().neq('estado', 'CANCELADO').order('fechaEntrega', { ascending: false });
   if (error) throw error;
   return data;
 };
@@ -114,7 +114,7 @@ export const updateEstadoPedido = async (idp, newStatus) =>  {
 //     {
 //       direccionEntrega: "prueba9999",
 //       fechaEntrega: "2022/02/19",
-//       estado: "pendiente",
+//       estado: "PENDIENTE",
 //       montoTotal: 100,
 //       anticipo: 50,
 //       delivery: true,
