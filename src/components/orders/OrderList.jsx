@@ -5,6 +5,7 @@ import { getPedidos } from "./../../services/service";
 import { ScrollView } from "react-native";
 import * as clientService from "../../services/client-service";
 import * as DateUtils from "../../utilities/date-utils";
+import * as Codes from '../../constants/codes';
 
 export default function OrderList({
   reloadList,
@@ -12,9 +13,10 @@ export default function OrderList({
   modalHandler,
   selectionHandler,
   pattern,
+  orderList
 }) {
   const [dataCard, setDataCard] = useState([]);
-  const [rawData, setrawData] = useState([]);
+  const [rawData, setrawData] = useState(orderList);
 
   useEffect(() => {
     if (!pattern || pattern.length < 3) {
@@ -33,29 +35,36 @@ export default function OrderList({
   }, [reloadList, pattern]);
 
   useEffect(() => {
+    if (orderList) {
+      mapGetOrders(orderList);
+      return;
+    }
+    refreshOrders();
+  }, [orderList]);
+
+  const refreshOrders = () => {
     getPedidos().then((response) => {
       setrawData(response);
       mapGetOrders(response);
     });
-    console.log("llamada a getPedidos");
-  }, [reloadList]);
+  }
 
   const mapGetOrders = (response) => {
+    if (response == null ||response == undefined) return;
     let newDataCard = [];
-
-    response = response.sort((a, b) => {
-      datea = DateUtils.getDateFromString(a.fechaEntrega);
-      dateb = DateUtils.getDateFromString(b.fechaEntrega);
-      return datea < dateb ? 1 : -1;
-    });
 
     if (displayMode === "shortMode") {
       response = response
         .filter(
-          (order) => order.fechaEntrega.substring(0,10) === DateUtils.getDateString(new Date())
+          (order) =>
+            DateUtils.getDateString(new Date(order.fechaEntrega)) ===
+              DateUtils.getDateString(new Date()) &&
+            order.estado.toUpperCase() !== Codes.FINALIZADO &&
+            order.estado.toUpperCase() !== Codes.ANULADO &&
+            order.estado.toUpperCase() !== Codes.CANCELADO
         )
         .slice(0, 3);
-    }
+      }
 
     response.forEach((order) => {
       newDataCard.push({
@@ -63,12 +72,14 @@ export default function OrderList({
         topCol1: `${order.clientName} ${
           order.clientLastName !== null ? order.clientLastName : ""
         }`,
-        midCol1: displayMode === "shortMode" ? DateUtils.userFormatTime(order.fechaEntrega) : DateUtils.userFormatDate(order.fechaEntrega),
+        midCol1:
+          displayMode === "shortMode"
+            ? DateUtils.userFormatTime(order.fechaEntrega)
+            : DateUtils.userFormatDateTime(order.fechaEntrega),
         midCol2: null,
         botCol1: order.estado,
       });
     });
-
     setDataCard(newDataCard);
   };
 

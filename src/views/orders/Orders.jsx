@@ -6,12 +6,13 @@ import SelectList from 'react-native-dropdown-select-list'
 import { updateEstadoPedido } from './../../services/service';
 import { ShowOrderStyles } from './ShowOrder.styles';
 import CommonSearchBar from '../../components/common/searchbar/searchbar.common';
+import { baseColors } from '../../constants/baseColors';
 
 export default function Pedidos({navigation}) {
   const data = [
-      {id:'1',value:'Activo'},
-      {id:'2',value:'Pendiente'},
-      {id:'3',value:'Finalizado'},
+      {id:'1',value:'ACTIVO'},
+      {id:'2',value:'PENDIENTE'},
+      {id:'3',value:'FINALIZADO'},
   ];
 
   const [showModal, setShowModal] = useState(false)
@@ -35,7 +36,7 @@ export default function Pedidos({navigation}) {
   
   const changeOrderStatus = () => {
     console.log(`Cambia el estado del pedido con id ${selectedOrder} a estado ${selectedStatus} `);
-    if (selectedStatus === 'Finalizado') {
+    if (selectedStatus === 'FINALIZADO') {
       setEnableConfirmButtonModal(false);
       setShowModal(!showModal);
       setShowFinishModal(!showFinishModal);
@@ -90,7 +91,7 @@ export default function Pedidos({navigation}) {
                 elevation: 24,
                 borderWidth: 0,
                 zIndex: 200,
-                backgroundColor: "#FAFAFA",
+                backgroundColor: baseColors.fondoApp,
               }}
               inputStyles={{
                 color: "#8E8E8E",
@@ -104,7 +105,7 @@ export default function Pedidos({navigation}) {
               }}
               boxStyles={{
                 borderWidth: 0,
-                backgroundColor: "#FAFAFA",
+                backgroundColor: baseColors.fondoApp,
                 shadowColor: "#333",
                 elevation: 4,
               }}
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
   container:{
     flex: 1,
     padding: 10,
-    backgroundColor: '#FBFBFB'
+    backgroundColor: baseColors.fondoApp
   }
 })
 

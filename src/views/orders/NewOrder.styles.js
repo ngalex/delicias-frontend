@@ -1,11 +1,12 @@
 import { StyleSheet } from "react-native";
+import { baseColors } from "../../constants/baseColors";
 
 export const NewOrderStyles = StyleSheet.create({
     container: {
         flexDirection: "column",
         width: "100%",
-        paddingHorizontal: 5,
-        backgroundColor: "#FAFAFA",
+        paddingHorizontal: 20,
+        backgroundColor: baseColors.fondoApp
     },
     subtitle: {
         fontSize: 18,

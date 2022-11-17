@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Pressable } from "react-native";
+import { baseColors } from "../../constants/baseColors";
+import IconFont5 from 'react-native-vector-icons/FontAwesome';
 // Falta:
 // * configurar el modo orderShortMode que se utilizara para el orderList del Home
 // * configurar boton opcional
@@ -30,13 +32,35 @@ export default function Card(props) {
     }
   };
   function renderBottom() {
-    if (props.displayMode !== "shortMode") {
       return (
         <View style={[styles.row, styles.bottom]}>
           <View>
-            <Text style={[styles.text, styles.bottom]}>* {data.botCol1}</Text>
+            <Text style={[styles.text, styles.bottom]}><IconFont5 name='circle' size={10} color={getColorCircle()}/> {data.botCol1}</Text>
           </View>
-          <View style={styles.button}>
+          {props.displayMode !== "shortMode" ? buildButtonStatus() : null}
+        </View>
+      );
+    return null;
+  }
+  const getColorCircle = () => {
+    switch (data.botCol1) {
+      case 'FINALIZADO':
+        return "#078BFF"
+      case 'ACTIVO':
+        return "#11FF00"
+      case 'ANULADO':
+        return "red"
+      case 'PENDIENTE':
+        return "gray"
+      default:
+        return "gray"
+    }
+  }
+
+  const buildButtonStatus = () => {
+    if (data.botCol1 !== 'ANULADO' && data.botCol1 !== 'FINALIZADO') {
+      return(
+        <View style={styles.button}>
             <Text
               onPress={() => {
                 modalHandler();
@@ -46,14 +70,18 @@ export default function Card(props) {
               {getTittleButton()}
             </Text>
           </View>
-        </View>
       );
     }
     return null;
   }
+  const setMargins = {
+    marginVertical: displayMode === 'orderMode' ? 10 : 7,
+    paddingVertical: displayMode === 'orderMode' ? 10 : 8,
+    paddingHorizontal: 12,
+  }
 
   return (
-    <View style={styles.cardContainer}>
+    <View style={{...styles.cardContainer, ...setMargins}}>
       <Pressable style={styles.content} onPress={() => selectionHandler()}>
         <View style={[styles.row, styles.top]}>
           <Text style={[styles.text, styles.top]}>{data.topCol1}</Text>
@@ -74,12 +102,11 @@ export default function Card(props) {
 const styles = StyleSheet.create({
   cardContainer: {
     paddingVertical: 8,
-    paddingHorizontal: 4,
     backgroundColor: "#FFF",
     margin: 5,
     borderRadius: 5,
-    shadowColor: "#333",
-    elevation: 5,
+    shadowColor: '#999',
+    elevation: 7,
   },
   content: {
     justifyContent: "center",
@@ -92,7 +119,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    width: "95%",
+    width: "100%",
     justifyContent: "space-between",
   },
   middleRow: {
@@ -106,7 +133,7 @@ const styles = StyleSheet.create({
     color: "#aaa",
   },
   bottom: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#aaa",
     alignItems: "center",
     paddingBottom: 2,

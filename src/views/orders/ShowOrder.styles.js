@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { baseColors } from "../../constants/baseColors";
 
 export const ShowOrderStyles = StyleSheet.create({
     container: {
@@ -6,10 +7,11 @@ export const ShowOrderStyles = StyleSheet.create({
         width: "100%",
         paddingTop: 20,
         paddingLeft: 20,
-        paddingRight: 20
+        paddingRight: 20,
+        backgroundColor: baseColors.fondoApp
     },
     margin_bottom: {
-        marginBottom: 10,
+        marginRight: 20,
     },
     row: {
         flexDirection: "row",
@@ -50,7 +52,7 @@ export const ShowOrderStyles = StyleSheet.create({
     },
     modal_customContentContainer: {
         width: '100%',
-        paddingVertical: 50
+        height: 200
     },
     modal_toggle: {
         position: 'absolute',
