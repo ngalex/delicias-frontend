@@ -13,6 +13,7 @@ import SelectList from "react-native-dropdown-select-list";
 import * as AppService from "../../services/service";
 import Voucher from "../../components/common/voucher/voucher.common";
 import { baseColors } from "../../constants/baseColors";
+import * as DateUtils from "../../utilities/date-utils";
 
 export default function ShowOrder({ route, navigation }) {
   
@@ -57,8 +58,11 @@ export default function ShowOrder({ route, navigation }) {
 
   const configData = (response) => {
     const orderResult = response[0];
-    console.log("🚀 ~ file: ShowOrder.jsx ~ line 42 ~ configData ~ orderResult", orderResult)
-    orderResult.fechaEntrega = orderResult.fechaEntrega.replace(/-/g,'/') + " 00:00";
+    orderResult.fechaEntrega =
+      DateUtils.getDateString(new Date(orderResult.fechaEntrega)).replace(
+        /-/g,
+        "/"
+      ) + " " + DateUtils.userFormatTime(orderResult.fechaEntrega);
     setorder(orderResult);
     setclient({ id: orderResult.cliente_id, nombre: orderResult.clientName, apellido: orderResult.clientLastName});
     setproducer({ id: orderResult.productor_id, nombre: orderResult.producerName});

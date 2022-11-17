@@ -152,7 +152,6 @@ export default function CommonInput(prop) {
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
             setModalVisible(!modalVisible);
             prop.onChangeInput(inputValue);
           }}
@@ -161,9 +160,7 @@ export default function CommonInput(prop) {
             <View style={inputCommonStyles.modalView}>
               <DatePicker
                 selected={value}
-                onSelectedChange={(date) => {
-                  setinputValue(date);
-                }}
+                onSelectedChange={setinputValue}
               />
 
               <Pressable

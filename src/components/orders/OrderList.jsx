@@ -48,24 +48,25 @@ export default function OrderList({
   const mapGetOrders = (response) => {
     let newDataCard = [];
 
-    response = response.sort((a, b) => {
-      datea = DateUtils.getDateFromString(a.fechaEntrega);
-      dateb = DateUtils.getDateFromString(b.fechaEntrega);
-      return datea < dateb ? 1 : -1;
-    });
+    // response = response.sort((a, b) => {
+    //   datea = DateUtils.getDateFromString(a.fechaEntrega);
+    //   dateb = DateUtils.getDateFromString(b.fechaEntrega);
+    //   return datea < dateb ? 1 : -1;
+    // });
 
     if (displayMode === "shortMode") {
       response = response
         .filter(
           (order) =>
-            order.fechaEntrega.substring(0, 10) ===
+            DateUtils.getDateString(new Date(order.fechaEntrega)) ===
               DateUtils.getDateString(new Date()) &&
             order.estado.toUpperCase() !== Codes.FINALIZADO &&
             order.estado.toUpperCase() !== Codes.ANULADO &&
             order.estado.toUpperCase() !== Codes.CANCELADO
         )
         .slice(0, 3);
-    }
+      }
+      console.log("🚀 ~ file: OrderList.jsx ~ line 68 ~ mapGetOrders ~ response", response)
 
     response.forEach((order) => {
       newDataCard.push({
@@ -73,7 +74,10 @@ export default function OrderList({
         topCol1: `${order.clientName} ${
           order.clientLastName !== null ? order.clientLastName : ""
         }`,
-        midCol1: displayMode === "shortMode" ? DateUtils.userFormatTime(order.fechaEntrega) : DateUtils.userFormatDate(order.fechaEntrega),
+        midCol1:
+          displayMode === "shortMode"
+            ? DateUtils.userFormatTime(order.fechaEntrega)
+            : DateUtils.userFormatDateTime(order.fechaEntrega),
         midCol2: null,
         botCol1: order.estado,
       });
