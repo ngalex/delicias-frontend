@@ -32,16 +32,16 @@ export default function Card(props) {
     }
   };
   function renderBottom() {
-    if (props.displayMode !== "shortMode") {
+    // if (props.displayMode !== "shortMode") {
       return (
         <View style={[styles.row, styles.bottom]}>
           <View>
             <Text style={[styles.text, styles.bottom]}><IconFont5 name='circle' size={10} color={getColorCircle()}/> {data.botCol1}</Text>
           </View>
-          {buildButtonStatus()}
+          {props.displayMode !== "shortMode" ? buildButtonStatus() : null}
         </View>
       );
-    }
+    // }
     return null;
   }
   const getColorCircle = () => {

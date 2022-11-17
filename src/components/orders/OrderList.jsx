@@ -13,9 +13,10 @@ export default function OrderList({
   modalHandler,
   selectionHandler,
   pattern,
+  orderList
 }) {
   const [dataCard, setDataCard] = useState([]);
-  const [rawData, setrawData] = useState([]);
+  const [rawData, setrawData] = useState(orderList);
 
   useEffect(() => {
     if (!pattern || pattern.length < 3) {
@@ -34,25 +35,23 @@ export default function OrderList({
   }, [reloadList, pattern]);
 
   useEffect(() => {
+    if (orderList) {
+      mapGetOrders(orderList);
+      return;
+    }
     refreshOrders();
-  }, [reloadList]);
+  }, [orderList]);
 
   const refreshOrders = () => {
     getPedidos().then((response) => {
       setrawData(response);
       mapGetOrders(response);
     });
-    console.log("llamada a getPedidos");
   }
 
   const mapGetOrders = (response) => {
+    if (response == null ||response == undefined) return;
     let newDataCard = [];
-
-    // response = response.sort((a, b) => {
-    //   datea = DateUtils.getDateFromString(a.fechaEntrega);
-    //   dateb = DateUtils.getDateFromString(b.fechaEntrega);
-    //   return datea < dateb ? 1 : -1;
-    // });
 
     if (displayMode === "shortMode") {
       response = response
@@ -66,7 +65,6 @@ export default function OrderList({
         )
         .slice(0, 3);
       }
-      console.log("🚀 ~ file: OrderList.jsx ~ line 68 ~ mapGetOrders ~ response", response)
 
     response.forEach((order) => {
       newDataCard.push({

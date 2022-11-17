@@ -4,15 +4,32 @@ import OrderList from '../../components/orders/OrderList';
 import BigButton from '../../components/common/buttons/BigButton';
 import { ButtonP } from '../../components/common/buttons/ButtonP';
 import Constants from "expo-constants";
+import { useEffect } from 'react';
+import { getPedidos } from "./../../services/service";
+import { useState } from 'react';
 
-export default function Home({ navigation }) {
+export default function Home({ navigation, route }) {
+  const [orderList, setorderList] = useState([]);
+React.useEffect(() => {
+  const focusHandler = navigation.addListener("focus", () => {
+    getPedidos().then((response) => {
+      setorderList(response)
+    });
+  });
+  return focusHandler;
+}, [navigation]);
+
+
   return (
-    <View style={{...styles.container, marginTop: Constants.statusBarHeight}}>
+    <View style={{ ...styles.container, marginTop: Constants.statusBarHeight }}>
       <View style={styles.orderListContainer}>
         <Text style={styles.title}>Pedidos de hoy</Text>
         <OrderList
           displayMode={"shortMode"}
-          selectionHandler={(idpedido => navigation.navigate("PedidoScreen",{ idpedido: idpedido }))}
+          orderList={orderList}
+          selectionHandler={(idpedido) =>
+            navigation.navigate("PedidoScreen", { idpedido: idpedido })
+          }
         />
       </View>
       <View style={styles.wPedidos}>
